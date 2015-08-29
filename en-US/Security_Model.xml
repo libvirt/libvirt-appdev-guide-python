@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+
+<chapter id="libvirt_application_development_guide_using_python-Security">
+    <title>Security Model</title>
+    <indexterm><primary>Security model</primary></indexterm>
+    <para>
+        While the Python modules supplies full access to the security and secret methods, this topic is
+        currently beyond the scope of this guide. You can look up the security and secret methods by
+        running the following command.
+      </para>
+      <programlisting  language="Python">pydoc libvirt</programlisting>
+      <para>
+          This will give you a manpage of the Python classes, methods and functions available specific
+          to your Linux distribution.
+      </para>
+</chapter>

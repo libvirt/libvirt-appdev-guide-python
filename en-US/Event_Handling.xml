@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Events_and_Timers">
+    <title>Event and Timer Handling</title>
+    <indexterm><primary>virEventAddHandle</primary></indexterm>
+    <indexterm><primary>virEventRegisterDefaultImpl</primary></indexterm>
+    <indexterm><primary>virEventRegisterImpl</primary></indexterm>
+    <indexterm><primary>virEventRemoveHandle</primary></indexterm>
+    <indexterm><primary>virEventRunDefaultImpl</primary></indexterm>
+    <indexterm><primary>virEventUpdateHandle</primary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventUpdateHandle</secondary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventRunDefaultImpl</secondary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventRemoveHandle</secondary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventRegisterDefaultImpl</secondary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventRegisterImpl</secondary></indexterm>
+    <indexterm><primary>Functions</primary>
+    <secondary>virEventAddHandle</secondary></indexterm>
+    <para>
+        The Python libvirt module provides a complete interface for handling both events and timers.
+        Both event and timer handling are invoked through a function interface as opposed to a
+        class/method interface. This makes it easier to integrate the interface into either a graphical
+        or console program.
+    </para>
+    <section id="libvirt_application_development_guide_using_python-Event_Handling">
+        <title>Event Handling</title>
+        <para>
+            The Python libvirt module supplies a framework for event handling. While this is most useful
+            for graphical programs, it can also be used for console programs to provide a consistent user
+            interface and control the processing of console events.
+        </para>
+        <para>
+            Event handling is done through the functions <literal>virEventAddHandle</literal>,
+            <literal>virEventRegisterDefaultImpl</literal>, <literal>virEventRegisterImpl</literal>,
+            <literal>virEventRemoveHandle</literal>, <literal>virEventRunDefaultImpl</literal>,
+            and <literal>virEventUpdateHandle</literal>.
+        </para>
+        <para>
+            Creating an event requires
+            that an event loop has previously been registered with <literal>virEventRegisterImpl</literal>
+            or <literal>virEventRegisterDefaultImpl</literal>.
+        </para>
+        <para>
+            An example program that uses most of these functions follows:
+        </para>
+        <example id="Events-example_1">
+            <title>Provide a persistent console that survives guest reboots</title>
+            <programlisting language="Python"><xi:include href="extras/Events-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+    <section id="libvirt_application_development_guide_using_python-Timer_Handling">
+        <title>Timer Handling</title>
+        <para>
+            The Python libvirt module supplies a framework for timer handling. Creating a timer requires
+            that an event loop has previously been registered with <literal>virEventRegisterImpl</literal>
+            or <literal>virEventRegisterDefaultImpl</literal>.
+        </para>
+        <para>
+            Timer handling is done through the functions <literal>virEventAddTimeout</literal>,
+            <literal>virEventUdateTimeout</literal>, and <literal>virEventRemoveTimeout</literal>. The
+            implementation will support many timers.
+        </para>
+        <para>
+            To create a new timer call the <literal>VirEventAddTimout</literal> after the
+            <literal>virEventRegisterImpl</literal> or the <literal>virEventRegisterDefaultImpl</literal>
+            function has been invoked.
+        </para>
+        <para>
+            The timer can be removed using the <literal>VirEventRemoveTimout</literal> or updated with the
+            <literal>virEventUpdateTimeout</literal> function after it has been added.
+        </para>
+    </section>
+</chapter>

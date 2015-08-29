@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Virtual_Networks">
+    <title>Virtual Networks</title>
+    <indexterm><primary>Storage networks</primary></indexterm>
+
+    <section id="libvirt_application_development_guide_using_python-Virtual_Networks-Overview">
+        <title>Overview</title>
+        <para>
+            A virtual network provides a method for connecting the network devices of one or more guest domains
+            within a single host. The virtual network can either:
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    Remain isolated to the host; or
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Allow routing of traffic off-node via the active network interfaces of the host OS. This
+                    includes the option to apply NAT to IPv4 traffic. 
+                </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            A virtual network is represented by the <literal>virNetwork</literal> object and has two unique
+            identifiers.
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    name: short string, unique amongst all virtual network on a single host, both running and
+                    inactive. For maximum portability between hypervisors, applications should only use the
+                    characters a-Z,0-9,-,_ in names.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    UUID: 16 unsigned bytes, guaranteed to be unique amongst all virtual networks on any host.
+                    RFC 4122 defines the format for UUIDs and provides a recommended algorithm for generating
+                    UUIDs with guaranteed uniqueness. 
+                </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            A virtual network may be transient or persistent. A transient virtual network can only be managed
+            while it is running on the host. When taken offline, all trace of it will disappear. A persistent
+            virtual network has its configuration maintained in a data store on the host, in an implementation
+            defined format. Thus when a persistent network is brought offline, it is still possible to manage its
+            inactive config. A transient network can be turned into a persistent network on the fly by defining a
+            configuration for it.
+        </para>
+        <para>
+            After installation of libvirt, every host will get a single virtual network instance called 'default',
+            which provides DHCP services to guests and allows NAT'd IP connectivity to the host's interfaces. This
+            service is of most use to hosts with intermittent network connectivity. For example, laptops using
+            wireless networking.
+        </para>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Virtual_Networks-Listing">
+        <title>Listing networks</title>
+        <indexterm><primary>networkLookupByName</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkLookupByName</secondary></indexterm>
+        <indexterm><primary>networkLookupByUUID</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkLookupByUUID</secondary></indexterm>
+        <indexterm><primary>networkLookupByUUIDString</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkLookupByUUIDString</secondary></indexterm>
+        <indexterm><primary>networkLookupByUUIDString</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkLookupByUUIDString</secondary></indexterm>
+        <indexterm><primary>listNetworks</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>listNetworks</secondary></indexterm>
+        <para>
+            Virtual networks are discovered using the methods <literal>networkLookupByName</literal>,
+            <literal>networkLookupByUUID</literal>, and <literal>networkLookupByUUIDString</literal>
+            and <literal>listNetworks</literal>. The following example shows how to used these methods.
+        </para>
+        <example>
+            <title>Discovering and finding virtual networks</title>
+            <programlisting language="Python"><xi:include href="extras/VirtualNetworks-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Virtual_Networks-Lifecycle">
+        <title>Lifecycle control</title>
+        <indexterm><primary>networkCreateXML</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkCreateXML</secondary></indexterm>
+        <indexterm><primary>networkDefineXML</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>networkDefineXML</secondary></indexterm>
+        <indexterm><primary>destroy</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>destroy</secondary></indexterm>
+        <para>
+            The following example shows how to use the <literal>networkCreateXML</literal>,
+            <literal>networkDefineXML</literal> and the <literal>destroy</literal> methods.
+        </para>
+        <example>
+            <title>Creating and destroying virtual networks</title>
+            <programlisting language="Python"><xi:include href="extras/VirtualNetworks-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Virtual_Networks-Config">
+        <title>Network configuration</title>
+        <indexterm><primary>XMLDesc</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>XMLDesc</secondary></indexterm>
+        <indexterm><primary>autostart</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>autostart</secondary></indexterm>
+        <indexterm><primary>isActive</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>isActive</secondary></indexterm>
+        <indexterm><primary>isPersistent</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>isPersistent</secondary></indexterm>
+        <indexterm><primary>setAutostart</primary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>setAutostart</secondary></indexterm>
+        <para>
+            The following example shows how to use the <literal>XMLDesc</literal>, <literal>autostart</literal>,
+            <literal>isActive</literal>, <literal>isPersistent</literal> and the <literal>setAutostart</literal>
+            methods.
+        </para>
+        <example>
+            <title>Configuring virtual networks</title>
+            <programlisting language="Python"><xi:include href="extras/VirtualNetworks-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+</chapter>

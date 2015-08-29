@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Storage_Pools">
+    <title>Storage Pools</title>
+    <indexterm><primary>storage pools</primary></indexterm>
+    <para>
+        Libvirt provides storage management on the physical host through storage pools and volumes.
+    </para>
+    <para>
+        A storage pool is a quantity of storage set aside by an administrator, often a dedicated storage
+        administrator, for use by virtual machines. Storage pools are divided into storage volumes either by
+        the storage administrator or the system administrator, and the volumes are assigned to VMs as block
+        devices.
+    </para>
+    <para>
+        For example, the storage administrator responsible for an NFS server creates a share to store virtual
+        machines' data. The system administrator defines a pool on the virtualization host with the details of
+        the share (e.g. nfs.example.com:/path/to/share should be mounted on /vm_data). When the pool is started,
+        libvirt mounts the share on the specified directory, just as if the system administrator logged in and
+        executed 'mount nfs.example.com:/path/to/share /vmdata'. If the pool is configured to autostart, libvirt
+        ensures that the NFS share is mounted on the directory specified when libvirt is started.
+    </para>
+    <para>
+        Once the pool is started, the files in the NFS share are reported as volumes, and the storage volumes'
+        paths may be queried using the libvirt APIs. The volumes' paths can then be copied into the section of
+        a VM's XML definition describing the source storage for the VM's block devices. In the case of NFS,
+        an application using the libvirt methods can create and delete volumes in the pool (files in the NFS share)
+        up to the limit of the size of the pool (the storage capacity of the share). Not all pool types support
+        creating and deleting volumes. Stopping the pool (somewhat unfortunately referred to by virsh and the
+        API as "pool-destroy") undoes the start operation, in this case, unmounting the NFS share. The data on
+        the share is not modified by the destroy operation, despite the name. See man virsh for more details.
+    </para>
+    <para>
+        A second example is an iSCSI pool. A storage administrator provisions an iSCSI target to present a set
+        of LUNs to the host running the VMs. When libvirt is configured to manage that iSCSI target as a pool,
+        libvirt will ensure that the host logs into the iSCSI target and libvirt can then report the available
+        LUNs as storage volumes. The volumes' paths can be queried and used in VM's XML definitions as in the
+        NFS example. In this case, the LUNs are defined on the iSCSI server, and libvirt cannot create and
+        delete volumes.
+    </para>
+    <para>
+        Storage pools and volumes are not required for the proper operation of VMs. Pools and volumes provide
+        a way for libvirt to ensure that a particular piece of storage will be available for a VM, but some
+        administrators will prefer to manage their own storage and VMs will operate properly without any pools
+        or volumes defined. On systems that do not use pools, system administrators must ensure the availability
+        of the VMs' storage using whatever tools they prefer, for example, adding the NFS share to the host's
+        fstab so that the share is mounted at boot time.
+    </para>
+    <para>
+        If at this point the value of pools and volumes over traditional system administration tools is unclear,
+        note that one of the features of libvirt is its remote protocol, so it's possible to manage all aspects
+        of a virtual machine's lifecycle as well as the configuration of the resources required by the VM. These
+        operations can be performed on a remote host entirely within the Python libvirt module. In other words, a
+        management application using libvirt can enable a user to perform all the required tasks for configuring
+        the host for a VM: allocating resources, running the VM, shutting it down and deallocating the resources, without requiring shell access or any other control channel.
+    </para>
+    <para>
+        Libvirt supports the following storage pool types:
+    </para>
+    <itemizedlist>
+        <listitem><para>Directory backend</para></listitem>
+        <listitem><para>Local filesystem backend</para></listitem>
+        <listitem><para>Network filesystem backend</para></listitem>
+        <listitem><para>Logical backend</para></listitem>
+        <listitem><para>Disk backend</para></listitem>
+        <listitem><para>iSCSI backend</para></listitem>
+        <listitem><para>SCSI backend</para></listitem>
+        <listitem><para>Multipath backend</para></listitem>
+        <listitem><para>RBD (RADOS Block Device) backend</para></listitem>
+        <listitem><para>Sheepdog backend</para></listitem>
+        <listitem><para>Gluster backend</para></listitem>
+        <listitem><para>ZFS backend</para></listitem>
+    </itemizedlist>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Overview">
+        <title>Overview</title>
+        <para>
+            Storage pools are the containers for storage volumes. A system may have as many storage pools
+            as needed and each storage pool may contain as many storage volumes as necessary.
+        </para>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Listingt">
+        <title>Listing pools</title>
+        <indexterm><primary>listAllStoragePools</primary></indexterm>
+        <indexterm><primary>Storage pools</primary>
+        <secondary>listAllStoragePools</secondary></indexterm>
+        <para>
+            A list of storage pool objects can be obtained using the <literal>listAllStoragePools</literal> method of the
+            <literal>virConnect</literal> class.
+        </para>
+        <para>
+            The flags parameter can be one or more of the following constants:
+        </para>
+        <simplelist>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_DIR</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_FS</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_NETFS</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_DISK</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_SCSI</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_MPATH</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_RBD</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER</member>
+            <member>VIR_CONNECT_LIST_STORAGE_POOLS_ZFS</member>
+        </simplelist>
+        <example>
+            <title>Get the list of storage pools</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Usage">
+        <title>Pool usage</title>
+        <para>
+            There are a number of methods available in the <literal>virStoragePool</literal> class. The
+            following example program features a number of the methods which describe some attributes of a pool.
+        </para>
+        <example>
+            <title>Show the usage of some storage pool methods</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+        <para>
+            Many of the methods shown in the previous example provide information concerning storage pools
+            that are on remote file systems, disk systems, or types other that local file systems.
+            For instance. if the <literal>autostart</literal> flag is set then when the user connects to
+            the storage pool libvirt will automatically make the storage pool available if it is not
+            on a local file system e.g. an NFS mount. Storage pools on local file systems also need to be
+            started if the <literal>autostart</literal> is not set.
+        </para>
+        <para>
+            <indexterm><primary>isActive</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>isActive</secondary></indexterm>
+            The <literal>isActive</literal> method indicates whether or not the user must activate the storage
+            pool in some way. The <literal>create</literal> method can activate a storage pool.
+        </para>
+        <para>
+            <indexterm><primary>isPersistent</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>isPersistent</secondary></indexterm>
+            The <literal>isPersistent</literal> method indicates whether or not a storage pool needs to be activated
+            using <literal>create</literal> method. A value of 1 indicates that the storage pool is persistent
+            and will remain on the file system after it is released.
+        </para>
+        <para>
+            The flags parameter can be one or more of the following constants:
+        </para>
+        <simplelist>
+            <member>VIR_STORAGE_XML_INACTIVE</member>
+        </simplelist>
+        <para>
+            The following example shows how to get the XML description of a storage pool.
+        </para>
+        <example>
+            <title>Get the XML description of a storage pool</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Lifecycle">
+        <title>Lifecycle control</title>
+        <para>
+            <indexterm><primary>storagePoolDefineXML</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>storagePoolDefineXML</secondary></indexterm>
+            <indexterm><primary>storagePoolCreateXML</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>storagePoolCreateXML</secondary></indexterm>
+            <indexterm><primary>undefine</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>undefine</secondary></indexterm>
+            The following example shows how to create and destroy both a persistent and a 
+            non-persistent storage pool. Note that a storage pool can not be destroyed if
+            it is in a active state. By default storage pools are created in a inactive state.
+        </para>
+        <example>
+            <title>Create and destroy storage pools</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-4.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+        <para>
+            <indexterm><primary>delete</primary></indexterm>
+            <indexterm><primary>Storage pools</primary>
+            <secondary>delete</secondary></indexterm>
+            Note that the storage volumes defined in a storage pool will remain on the file system
+            unless the <literal>delete</literal> method is called. But be careful about leaving storage
+            volumes in place because if they exist on a remote file system or disk then that file system
+            may become unavailable to the guest domain since there will be no mechanism to reactivate the
+            remote file system or disk by the libvirt storage system at a future time.
+        </para>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Discover_Sources">
+        <title>Discovering pool sources</title>
+        <indexterm><primary>storagePoolLookupByName</primary></indexterm>
+        <indexterm><primary>Storage pools</primary>
+        <secondary>storagePoolLookupByName</secondary></indexterm>
+        <indexterm><primary>XMLDesc</primary></indexterm>
+        <indexterm><primary>Storage pools</primary>
+        <secondary>XMLDesc</secondary></indexterm>
+        <para>
+            The sources for a storage pool's sources can be discovered by examining the pool's XML
+            description. An example program follows that prints out a pools source description attributes.
+        </para>
+        <para>
+            Currently the flags parameter for the <literal>storagePoolCreateXML</literal> method
+            should always be <code language="Python">0</code>.
+        </para>
+        <example>
+            <title>Discover a storage pool's sources</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-5.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Pool_Config">
+        <title>Pool configuration</title>
+        <indexterm><primary>setAutostart</primary></indexterm>
+        <indexterm><primary>Storage pools</primary>
+        <secondary>setAutostart</secondary></indexterm>
+        <para>
+            There are a number of methods which can configure aspects of a storage pool. The main method
+            is the <literal>setAutostart</literal> method. 
+        </para>
+        <example>
+            <title>Demonstrate the setAutostart method</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Volume">
+        <title>Volume overview</title>
+        <para>
+            Storage volumes are the basic unit of storage which house a guest domain's storage requirements.
+            All the necessary partitions used to house a guest domain are encapsulated by the storage volume.
+            Storage volumes are in turn contained in storage pools. A storage pool can contain as many
+            storage pools as the underlying disk partition will hold.
+        </para>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Listing">
+        <title>Listing volumes</title>
+        <indexterm><primary>listVolumes</primary></indexterm>
+        <indexterm><primary>Storage volumes</primary>
+        <secondary>listVolumes</secondary></indexterm>
+        <para>
+            The following example program demonstrates how to list all the storage volumes contained by the
+            "default" storage pool.
+        </para>
+        <example>
+            <title>Demonstrate listing the storage volumes</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-7.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Vol_Info">
+        <title>Volume information</title>
+        <indexterm><primary>info</primary></indexterm>
+        <indexterm><primary>Storage volumes</primary>
+        <secondary>info</secondary></indexterm>
+        <para>
+            Information about a storage volume is obtained by using the <literal>info</literal> method. The
+            following program shows how to list the information about each storage volume in the
+            "default" storage pool.
+        </para>
+        <example>
+            <title>List storage volume information</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-8.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Create_Remove">
+        <title>Creating and deleting volumes</title>
+        <indexterm><primary>createXML</primary></indexterm>
+        <indexterm><primary>Storage volumes</primary>
+        <secondary>createXML</secondary></indexterm>
+        <para>
+            Storage volumes are created using the storage pool <literal>createXML</literal> method. The type
+            and attributes of the storage volume are specified in the XML passed to the
+            <literal>createXML</literal> method.
+        </para>
+        <para>
+            The flags parameter can be one or more of the following constants:
+        </para>
+        <simplelist>
+            <member>VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA</member>
+            <member>VIR_STORAGE_VOL_CREATE_REFLINKVIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE</member>
+        </simplelist>
+        <example>
+            <title>Create a storage volume</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-9.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Cloning">
+        <title>Cloning volumes</title>
+        <indexterm><primary>createXML</primary></indexterm>
+        <indexterm><primary>Storage volumes</primary>
+        <secondary>createXML</secondary></indexterm>
+        <para>
+            Cloning a storage volume is similar to creating a new storage volume, except that an existing
+            storage volume is used for most of the attributes. Only the name and permissions in the XML
+            parameter are used for the new volume, everything else is inherited from the existing volume.
+        </para>
+        <para>
+            It should be noted that cloning can take a very long time to accomplish, depending on the size
+            of the storage volume being cloned. This is because the clone process copies the data from the
+            source volume to the new target volume. 
+        </para>
+        <example>
+            <title>Clone an existing storage volume</title>
+            <programlisting language="Python"><xi:include href="extras/StoragePools-Example-10.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+      </section>
+
+    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Config_Vol">
+        <title>Configuring volumes</title>
+        <indexterm><primary>createXMLFrom</primary></indexterm>
+        <indexterm><primary>Storage volumes</primary>
+        <secondary>createXMLFrom</secondary></indexterm>
+        <para>
+            The following is an XML description for a storage volume.
+        </para>
+        <example>
+            <title>XML description for a storage volume</title>
+            <programlisting language="XML"><xi:include href="extras/StoragePools-Example-11.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+</chapter>
+

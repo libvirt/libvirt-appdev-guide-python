@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Debug">
+    <title>Debugging / Logging</title>
+    <indexterm><primary>Debugging</primary></indexterm>
+    <indexterm><primary>Logging</primary></indexterm>
+    <para>
+        Libvirt includes logging facilities to facilitate the tracing of library
+        execution. These logs will frequently be requested when trying to
+        obtain support for libvirt, so familiarity with them is essential.
+    </para>
+    <para>
+        The logging facilities in libvirt are based on 3 key concepts:
+    </para>
+    <orderedlist>
+        <listitem>
+            <para>
+                Log messages - generated at runtime by the libvirt code, they include
+                a timestamp, a priority level (DEBUG = 1, INFO = 2, WARNING = 3, ERROR = 4),
+                a category, function name and line number indicating where the
+                message originated from, and a formatted message.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
+                Log filters - patterns and priorities which control whether or
+                not a particular message is displayed. The format for a filter is:
+            </para>
+            <para><screen>x:name</screen></para>
+            <para>
+                where "x" is the minimal priority level where the match should apply, and
+                "name" is a string to match against. The priority levels are:
+            </para>
+            <itemizedlist>
+                <listitem><para>1 (or debug) - log all messages</para></listitem>
+                <listitem><para>2 (or info) - log all non-debugging information</para></listitem>
+                <listitem><para>3 (or warn) - log only warnings and errors - this is the default</para></listitem>
+                <listitem><para>4 (or error) - log only errors</para></listitem>
+            </itemizedlist>
+            <para>
+                For instance, to log all debug messages to the qemu driver, the
+                following filter can be used:
+            </para>
+            <para><screen>1:qemu</screen></para>
+            <para>
+                Multiple filters can be specified together by space separating them;
+                the following example logs all debug messages from qemu, and logs
+                all error messages from the remote driver:
+            </para>
+            <para><screen>1:qemu 4:remote</screen></para>
+        </listitem>
+        <listitem>
+            <para>
+                Log outputs - where to send the message once it has passed
+                through filters. The format for a log output is one of the forms:
+            </para>
+            <para>
+<screen>x:stderr - log to stderr
+x:syslog:name - log to syslog with a prefix of "name"
+x:file:file_path - log to a file specified by "file_path"</screen>
+            </para>
+            <para>
+                where "x" is the minimal priority level. For instance, to log all
+                warnings and errors to syslog with a prefix of "libvirtd", the
+                following output can be used:
+            </para>
+            <para><screen>3:syslog:libvirtd</screen></para>
+            <para>
+                Multiple outputs can be specified by space separating them; the
+                following example logs all error and warning messages to syslog, and
+                logs all debug, information, warning, and error messages to
+                <filename>/tmp/libvirt.log</filename>:
+            </para>
+            <para><screen>3:syslog:libvirtd 1:file:/tmp/libvirt.log</screen></para>
+        </listitem>
+    </orderedlist>
+
+    <section>
+        <title>Environment Variables</title>
+        <indexterm><primary>Environment variables, debugging</primary></indexterm>
+        <indexterm><primary>Debugging environment variables</primary></indexterm>
+        <para>
+            The desired log priority level, filters, and outputs are specified to
+            the libvirt library through the use of environment variables:
+        </para>
+        <orderedlist>
+            <listitem>
+                <para>
+                    <literal>LIBVIRT_DEBUG</literal> specifies the minimum priority level messages that
+                    will be logged. This can be thought of as a "global" priority level;
+                    if a particular log message does not match a specific filter in
+                    <literal>LIBVIRT_LOG_FILTERS</literal>, it will be compared to this global priority and
+                    logged as appropriate.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>LIBVIRT_LOG_FILTERS</literal> specifies the filters to apply.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>LIBVIRT_LOG_OUTPUTS</literal> specifies the outputs to send the message to.
+                </para>
+            </listitem>
+        </orderedlist>
+        <example>
+            <title>Running virsh with environment variables</title>
+            <para>
+                To see more detailed information about what is going on with virsh,
+                we may run it like the following:
+            </para>
+<screen><command>LIBVIRT_DEBUG=error LIBVIRT_LOG_FILTERS="1:remote" virsh list</command></screen>
+            <para>
+                This example will only print error messages from virsh, <emphasis>except</emphasis> that
+                the remote driver will print all debug, information, warning, and
+                error messages.
+            </para>
+        </example>
+    </section>
+</chapter>

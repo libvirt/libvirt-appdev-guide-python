@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE authorgroup PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<authorgroup>
+  <author>
+    <firstname>W. David</firstname>
+    <surname>Ashley</surname>
+    <affiliation>
+      <orgname>Fedora</orgname>
+      <orgdiv>Documentation Team</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Daniel</firstname>
+    <surname>Berrange</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering, Virtualization</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Chris</firstname>
+    <surname>Lalancette</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering, Virtualization</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Laine</firstname>
+    <surname>Stump</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering, Virtualization</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Daniel</firstname>
+    <surname>Veillard</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering, Virtualization</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Dani</firstname>
+    <surname>Coulson</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering Content Services</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>David</firstname>
+    <surname>Jorm</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering Content Services</orgdiv>
+    </affiliation>
+  </author>
+  <author>
+    <firstname>Scott</firstname>
+    <surname>Radvan</surname>
+    <affiliation>
+      <orgname>Red Hat</orgname>
+      <orgdiv>Engineering Content Services</orgdiv>
+    </affiliation>
+  </author>
+</authorgroup>

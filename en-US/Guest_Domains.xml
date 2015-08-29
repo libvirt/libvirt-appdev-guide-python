@@ -1,0 +1,1392 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Guest_Domains">
+    <title>Guest Domains</title>
+    <indexterm><primary>Guest domains</primary></indexterm>
+    <indexterm><primary>Domains</primary></indexterm>
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Domain_Overview">
+        <title>Domain Overview</title>
+
+        <para>
+            A domain is an instance of an operating system running on a virtualized machine.
+            A guest domain can refer to either a running virtual machine or a configuration
+            which can be used to launch a virtual machine. The connection object provides methods
+            to enumerate the guest domains, create new guest domains and manage existing domains.
+            A guest domain is represented with the <literal>virDomainPtr</literal> object and
+            has a number of unique identifiers:
+        </para>
+
+        <itemizedlist>
+            <title>Unique identifiers</title>
+            <listitem>
+                <para>
+                    <application>ID</application>: positive integer, unique amongst running guest
+                    domains on a single host. An inactive domain does not have an ID. If the host
+                    OS is a virtual domain, it is given an ID of zero by default. For example, with
+                    the Xen hypervisor, <literal>Dom0</literal> indicates a guest domain. Other
+                    domain IDs will be allocated starting at 1, and incrementing each time a new
+                    domain starts. Typically domain IDs will not be re-used until the entire ID
+                    space wraps around. The domain ID space is at least 16 bits in size, but often
+                    extends to 32 bits.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <application>name</application>: short string, unique amongst all guest domains on a single host,
+                    both running and inactive. For maximum portability between hypervisors
+                    applications should only rely on being able to use the characters
+                    <literal>a-Z,0-9,-,_</literal> in names. Many hypervisors will store
+                    inactive domain configurations as files on disk, based on the domain
+                    name.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <application>UUID</application>: 16 unsigned bytes, guaranteed to be unique amongst all guest
+                    domains on any host. RFC 4122 defines the format for UUIDs and provides
+                    a recommended algorithm for generating UUIDs with guaranteed uniqueness.
+                    If the host OS is itself a virtual domain, then by convention it
+                    will be given a UUID of all zeros. This is the case with the Xen
+                    hypervisor, where <literal>Dom0</literal> is a guest domain itself.
+                </para>
+            </listitem>
+        </itemizedlist>
+
+        <para>
+            A guest domain may be transient, or persistent. A transient guest domain
+            can only be managed while it is running on the host and, when powered off,
+            all traces of it will disappear. A persistent guest domain has its configuration
+            maintained in a data store on the host by the hypervisor, in an implementation
+            defined format. Thus when a persistent guest is powered off, it is still
+            possible to manage its inactive config. A transient guest can be turned into
+            a persistent guest on the fly by defining a configuration for it.
+        </para>
+
+        <para>
+            <indexterm><primary>lookupByName, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>lookupByName</secondary></indexterm>
+            <indexterm><primary>lookupByID, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>lookupByID</secondary></indexterm>
+            <indexterm><primary>lookupByUUID, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>lookupByUUID</secondary></indexterm>
+            Once an application has a unique identifier for a domain, it will
+            often want to obtain the corresponding <literal>virDomain</literal>
+            object. There are three, imaginatively named, methods to do lookup
+            existing domains, <literal>lookupByID</literal>,
+            <literal>lookupByName</literal> and
+            <literal>lookupByUUID</literal>. Each of these takes
+            the domain identifier as a parameter.
+            They will return <literal>None</literal> if no matching domain exists.
+            The error object can be queried to find specific
+            details of the error if required.
+        </para>
+
+        <example>
+            <title>Fetching a domain object from an ID</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+        <example>
+            <title>Fetching a domain object from a name</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+        <example>
+            <title>Fetching a domain object from a UUID</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+        <para>
+            The UUID example used the example above uses the 
+            printable format of UUID. Using the equivalent raw bytes is not supported by Python.
+        </para>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Listing_Domains">
+        <title>Listing Domains</title>
+        <indexterm><primary>listing Domains</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>listing</secondary></indexterm>
+
+        <para>
+            The libvirt classes expose two lists of domains, the first
+            contains running domains, while the second contains
+            inactive, persistent domains. The lists are intended to
+            be non-overlapping, exclusive sets, though there is always
+            a small possibility that a domain can stop or start in
+            between the querying of each set. The events class described
+            later in this section provides a way to track all lifecycle
+            changes avoiding this potential race condition.
+        </para>
+
+        <para>
+            <indexterm><primary>listDomainsID</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>listDomainsID</secondary></indexterm>
+            The method for listing active domains, returns a list of domain
+            IDs. Every running domain has a positive integer ID, uniquely
+            identifying it amongst all running domains on the host. The
+            method for listing active domains, <literal>listDomainsID</literal>,
+            requires no parameters.
+            The return value will be <literal>None</literal>
+            upon error, or a Python <literal>list</literal> of the IDs expressed as
+            <literal>int</literal>s. 
+        </para>
+
+        <example>
+            <title>Listing active domains</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-4.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+
+        <para>
+            <indexterm><primary>listDefinedDomains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>listDefinedDmamins</secondary></indexterm>
+            In addition to the running domains, there may be some persistent
+            inactive domain configurations stored on the host. Since an inactive
+            domain does not have any ID identifier, the listing of inactive
+            domains is exposed as a list of name strings.
+            The return value will be <literal>None</literal> upon error, or a Python <literal>list</literal>
+            of elements filled with names (strings).
+        </para>
+
+        <example>
+            <title>Listing inactive domains</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-5.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+        <para>
+            <indexterm><primary>lisAllDomains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>listAllDmamins</secondary></indexterm>
+            The methods for listing domains do not directly return the
+            <literal>virDomain</literal> objects, since this may
+            incur undue performance penalty for applications which wish
+            to query the list of domains on a frequent basis. However,
+            the Python libvirt module does provide the method <literal>listAllDomains</literal>
+            which all the domains, active or inactive. It returns a Python <literal>list</literal>
+            of the <literal>virDomain</literal> instances or <literal>None</literal>
+            upon an error. The <literal>list</literal> can be empty when no persistent domains
+            exist.
+        </para>
+        <para>
+            The <literal>listAllDomains</literal> method takes a single parameter which is a flag specifying
+            a filter for the domains to be listed. If a value of <code language="Python">0</code> is specified then all
+            domains will be listed. Otherwise any or all of the following constants can be added together
+            to create a filter for the domains to be listed.
+        </para>
+        <simplelist>
+            <member>VIR_CONNECT_LIST_DOMAINS_ACTIVE</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_INACTIVE</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_PERSISTENT</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_TRANSIENT</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_RUNNING</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_PAUSED</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_SHUTOFF</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_OTHER</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_AUTOSTART</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHO</member>
+        </simplelist>
+        <example>
+          <title>Fetching all domain objects</title>
+          <programlisting language="Python"><xi:include href="extras/Domains-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle_Control">
+        <title>Lifecycle Control</title>
+        <indexterm><primary>Lifecycle, Domains</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>Lifecycle</secondary></indexterm>
+
+        <para>
+            Libvirt can control the entire lifecycle of guest domains. Guest domains can transition through
+            several states throughout their lifecycle:
+        </para>
+        <orderedlist>
+            <listitem>
+                <para>
+                    <literal>Undefined</literal>. This is the baseline state. An undefined guest domain
+                    has not been defined or created in any way.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+
+                    <literal>Defined</literal>. A defined guest domain has been defined but is not running.
+                    This state could also be described as <literal>Stopped</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>Running</literal>. A running guest domain is defined and being executed on a
+                    hypervisor.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>Paused</literal>. A paused guest domain is in a suspended state from the
+                    <literal>Running</literal> state. Its memory image has been temporarily stored, and
+                    it can be resumed to the <literal>Running</literal> state without the guest domain
+                    operating system being aware it was ever suspended.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <literal>Saved</literal>. A saved domain has had its memory image, as captured in
+                    the <literal>Paused</literal> state, saved to persistent storage. It can be restored
+                    to the <literal>Running</literal> state without the guest domain operating system
+                    being aware it was ever suspended.
+                </para>
+            </listitem>
+        </orderedlist>
+        <para>
+            The transitions between these states fall into several categories: 
+            <xref linkend="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning_and_Starting" />,
+            <xref linkend="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Save" />,
+            <xref linkend="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Migration" />
+            and <xref linkend="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Autostart" />.
+        </para>
+        <figure id="guest_domain_state_transition">
+            <title>Guest domain lifecycle</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/guest-state-transition.png" format="PNG" />
+                </imageobject>
+            </mediaobject>
+        </figure>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning_and_Starting">
+            <title>Provisioning and Starting</title>
+            <indexterm><primary>Provisioning and Starting, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>Provisioning and starting</secondary></indexterm>
+
+            <para>
+                Provisioning refers to the task of creating new guest domains,
+                typically using some form of operating system installation
+                media. There are a wide variety of ways in which a guest can
+                be provisioned, but the choices available will vary according
+                to the hypervisor and type of guest domain being provisioned.
+                It is not uncommon for an application to support several
+                different provisioning methods. Starting refers to executing a provisioned
+                guest domain on a hypervisor.
+            </para>
+
+            <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-Methods_For_Provisioning">
+                <title>Methods For Provisioning</title>
+
+                <para>
+                    <indexterm><primary>createXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>createXML</secondary></indexterm>
+                    <indexterm><primary>defineXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>defineXML</secondary></indexterm>
+                    There are up to three methods involved in provisioning guests.
+                    The <literal>createXML</literal> method will create
+                    and immediately boot a new transient guest domain. When this
+                    guest domain shuts down, all trace of it will disappear. The
+                    <literal>defineXML</literal> method will store the
+                    configuration for a persistent guest domain. The <literal>create</literal>
+                    method will boot a previously defined guest domain
+                    from its persistent configuration. One important thing to
+                    note, is that the <literal>defineXML</literal> command
+                    can be used to turn a previously booted transient guest domain,
+                    into a persistent domain. This can be useful for some provisioning
+                    scenarios that will be illustrated later.
+                </para>
+
+                <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-apis-Booting_Transient_Domain">
+                    <title>Booting a Transient Guest Domain</title>
+                    <para>
+                        To boot a transient guest domain, simply requires a connection to
+                        libvirt and a string containing the XML document describing the
+                        required guest configuration and a flag that controls the startup 
+                        of the domain.
+                    </para>
+
+                    <para>
+                        If the VIR_DOMAIN_START_PAUSED flag is set, the guest domain
+                        will be started, but its CPUs will remain paused. The CPUs
+                        can later be manually started using the <literal>resume</literal>
+                        method.
+                    </para>
+
+                    <para>
+                        If the VIR_DOMAIN_START_AUTODESTROY flag is set, the guest
+                        domain will be automatically destroyed when the <literal>virConnect</literal>
+                        object is finally released. This will also happen if the
+                        client application crashes or loses its connection to the
+                        libvirtd daemon. Any domains marked for auto destroy will
+                        block attempts at migration, save-to-file, or snapshots.
+                    </para>
+
+                    <example>
+                        <title>Provisioning a Transient Guest Domain</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-7.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                    <para>
+                      If the domain creation attempt succeeded, then the returned
+                      <literal>virDomain</literal> instance will be returned, otherwise
+                      <literal>None</literal> will be returned. Although
+                      the domain was booted successfully, this does not guarantee
+                      that the domain is still running. It is entirely possible for
+                      the guest domain to crash, in which case attempts to use the
+                      returned <literal>virDomain</literal> object will generate
+                      an error, since transient guests cease to exist when they
+                      shutdown (whether a planned shutdown, or a crash). To cope
+                      with this scenario requires use of a persistent guest.
+                    </para>
+
+                </section>
+
+                <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-apis-persistent">
+                    <title>Defining and Booting a Persistent Guest Domain</title>
+
+                    <para>
+                        Before a persistent domain can be booted, it must have its configuration
+                        defined. This again requires a connection to libvirt and a string containing
+                        the XML document describing the required guest configuration. The
+                        <literal>virDomain</literal> object obtained from defining the guest,
+                        can then be used to boot it.
+                    </para>
+
+                    <example>
+                        <title>Defining and Booting a Persistent Guest Domain</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-8.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                </section>
+
+            </section>
+
+            <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-Provisioning_Techniques">
+                <title>New Guest Domain Provisioning Techniques</title>
+                <indexterm><primary>New guest domain provisioning</primary></indexterm>
+                <indexterm><primary>Guest domain provisioning, New</primary></indexterm>
+                <indexterm><primary>Domain provisioning, New guest</primary></indexterm>
+
+                <para>
+                    This section will first illustrate two configurations that
+                    allow for a provisioning approach that is comparable to those
+                    used for physical machines. It then outlines a third option
+                    which is specific to virtualized hardware, but has some
+                    interesting benefits. For the purposes of illustration, the
+                    examples that follow will use an XML configuration that sets
+                    up a KVM fully virtualized guest, with a single disk and
+                    network interface and a video card using VNC for display.
+                </para>
+
+                <programlisting language="XML"><xi:include href="extras/Domains-Example-9.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                <important>
+                    <para>
+                        Be careful in the choice of initial memory allocation, since
+                        too low a value may cause mysterious crashes and installation
+                        failures. Some operating systems need as much as 600 MB of memory
+                        for initial installation, though this can often be reduced
+                        post-install.
+                    </para>
+                </important>
+
+                <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-ISO">
+                    <title>CDROM/ISO image provisioning</title>
+                    <indexterm><primary>CDROM/ISO image provisioning</primary></indexterm>
+                    <indexterm><primary>ISO/CDROM image provisioning</primary></indexterm>
+
+                    <para>
+                        All full virtualization technologies have support for emulating
+                        a CDROM device in a guest domain, making this an obvious choice
+                        for provisioning new guest domains. It is, however, fairly rare
+                        to find a hypervisor which provides CDROM devices for paravirtualized
+                        guests.
+                    </para>
+
+                    <para>
+                        The first obvious change required to the XML configuration to
+                        support CDROM installation, is to add a CDROM device. A guest
+                        domains' CDROM device can be pointed to either a host CDROM
+                        device, or to a ISO image file. The next change is to determine
+                        what the BIOS boot order should be, with there being two
+                        possible options. If the hard disk is listed ahead of the
+                        CDROM device, then the CDROM media won't be booted unless
+                        the first boot sector on the hard disk is blank. If the
+                        CDROM device is listed ahead of the hard disk, then it will
+                        be necessary to alter the guest config after install to
+                        make it boot off the installed disk. While both can be made
+                        to work, the first option is easiest to implement.
+                    </para>
+
+                    <para>
+                        The guest configuration shown earlier would have the following
+                        XML chunk inserted:
+                    </para>
+
+                    <programlisting language="XML"><xi:include href="extras/Domains-Example-10.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+
+                    <para>
+                        NB, this assumes the hard disk boot sector is blank initially,
+                        so that the first boot attempt falls through to the CD-ROM drive.
+                        It will also need a CD-ROM drive device added.
+                    </para>
+
+                    <programlisting language="XML"><xi:include href="extras/Domains-Example-11.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+
+                    <para>
+                        With the configuration determined, it is now possible
+                        to provision the guest. This is an easy process, simply
+                        requiring a persistent guest to be defined, and then
+                        booted.
+                    </para>
+
+                    <example>
+                        <title>Defining and Booting a Persistent Guest Domain</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-12.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                    <para>
+                        If it was not possible to guarantee that the boot
+                        sector of the hard disk is blank, then provisioning
+                        would have been a two step process. First a transient
+                        guest would have been booted using CD-ROM drive as the
+                        primary boot device. Once that completed, then
+                        a persistent configuration for the guest would be
+                        defined to boot off the hard disk.
+                    </para>
+
+                </section>
+
+                <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-PXE">
+                    <title>PXE Boot Provisioning</title>
+                    <indexterm><primary>PXE boot provisioning</primary></indexterm>
+
+                    <para>
+                        Some newer full virtualization technologies provide a BIOS that
+                        is able to use the PXE boot protocol to boot off the network. If
+                        an environment already has a PXE boot provisioning server deployed,
+                        this is a desirable method to use for guest domains.
+                    </para>
+
+                    <para>
+                        PXE booting a guest obviously requires that the guest has a
+                        network device configured. The LAN that this network card is
+                        attached to, also needs a PXE / TFTP server available.
+                        The next change is to determine
+                        what the BIOS boot order should be, with there being two
+                        possible options. If the hard disk is listed ahead of the
+                        network device, then the network card won't PXE boot unless
+                        the first boot sector on the hard disk is blank. If the
+                        network device is listed ahead of the hard disk, then it will
+                        be necessary to alter the guest config after install to
+                        make it boot off the installed disk. While both can be made
+                        to work, the first option is easiest to implement.
+                    </para>
+
+                    <para>
+                        The guest configuration shown earlier would have the following
+                        XML chunk inserted:
+                    </para>
+
+                    <programlisting language="XML"><xi:include href="extras/Domains-Example-13.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+
+                    <para>
+                        NB, this assumes the hard disk boot sector is blank initially,
+                        so that the first boot attempt falls through to the NIC.
+                        With the configuration determined, it is now possible
+                        to provision the guest. This is an easy process, simply
+                        requiring a persistent guest to be defined, and then
+                        booted.
+                    </para>
+
+                    <example>
+                        <title>PXE Boot Provisioning</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-14.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                    <para>
+                        If it was not possible to guarantee that the boot
+                        sector of the hard disk is blank, then provisioning
+                        would have been a two step process. First a transient
+                        guest would have been booted using network as the
+                        primary boot device. Once that completed, then
+                        a persistent configuration for the guest would be
+                        defined to boot off the hard disk.
+                    </para>
+                </section>
+
+                <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-Kernel">
+                    <title>Direct Kernel Boot Provisioning</title>
+                    <indexterm><primary>Kernel boot provisioning</primary></indexterm>
+
+                    <para>
+                        Paravirtualization technologies emulate a fairly restrictive
+                        set of hardware, often making it impossible to use the provisioning
+                        options just outlined. For such scenarios it is often possible to
+                        boot a new guest domain directly from an kernel and initrd image
+                        stored on the host file system. This has one interesting advantage,
+                        which is that it is possible to directly set kernel command line
+                        boot arguments, making it very easy to do fully automated
+                        installation. This advantage can be compelling enough that this
+                        technique is used even for fully virtualized guest domains with
+                        CD-ROM drive/PXE support.
+                    </para>
+
+                    <para>
+                        The one complication with direct kernel booting is that provisioning
+                        becomes a two step process. For the first step, it is necessary to
+                        configure the guest XML configuration to point to a kernel/initrd.
+                    </para>
+
+                    <example>
+                        <title>Kernel Boot Provisioning XML</title>
+                        <programlisting language="XML"><xi:include href="extras/Domains-Example-15.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                    <para>
+                        Notice how the kernel command line provides the URL of download
+                        site containing the distro install tree matching the kernel/initrd.
+                        This allows the installer to automatically download all its resources
+                        without prompting the user for install URL. It could also be used to
+                        provide a kickstart file for completely unattended installation.
+                        Finally, this command line also tells the kernel to activate both
+                        the first serial port and the VGA card as consoles, with the latter
+                        being the default. Having kernel messages duplicated on the serial
+                        port in this manner can be a useful debugging avenue. Of course
+                        valid command line arguments vary according to the particular kernel
+                        being booted. Consult the kernel vendor/distributor's documentation
+                        for valid options.
+                    </para>
+
+                    <para>
+                        The last XML configuration detail before starting the guest, is to
+                        change the 'on_reboot' element action to be 'destroy'. This ensures
+                        that when the guest installer finishes and requests a reboot, the
+                        guest is instead powered off. This allows the management application
+                        to change the configuration to make it boot off, just installed, the
+                        hard disk again. The provisioning process can be started now by
+                        creating a transient guest with the first XML configuration
+                    </para>
+
+                    <example>
+                        <title>Kernel Boot Provisioning</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-16.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                    <para>
+                        Once this guest shuts down, the second phase of the provisioning
+                        process can be started. For this phase, the 'OS' element will
+                        have the kernel/initrd/cmdline elements removed, and replaced
+                        by either a reference to a host side bootloader, or a BIOS
+                        boot setup. The former is used for Xen paravirtualized guests,
+                        while the latter is used for fully virtualized guests.
+                    </para>
+
+                    <para>
+                        The phase 2 configuration for a Xen paravirtualized guest
+                        would thus look like:
+                    </para>
+
+                    <programlisting language="XML"><xi:include href="extras/Domains-Example-17.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+
+                    <para>
+                      while a fully-virtualized guest would use:
+                    </para>
+
+                    <programlisting language="XML"><xi:include href="extras/Domains-Example-18.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+
+                    <para>
+                        With the second phase configuration determined, the guest can
+                        be recreated, this time using a persistent configuration
+                    </para>
+
+                    <example>
+                        <title>Kernel Boot Provisioning for a Persistent Guest Domain</title>
+                        <programlisting language="Python"><xi:include href="extras/Domains-Example-19.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+                    </example>
+
+                </section>
+            </section>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Stopping">
+            <title>Stopping</title>
+            <indexterm><primary>Stopping a domain</primary></indexterm>
+            <indexterm><primary>Domain, stopping a</primary></indexterm>
+            <indexterm><primary>shutdown</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>shutdown</secondary></indexterm>
+            <indexterm><primary>destroy</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>destroy</secondary></indexterm>
+            <para>
+                Stopping refers to the process of halting a running guest. A guest can be stopped by two methods:
+                shutdown and destroy.
+            </para>
+            <para>
+                The <literal>shutdown</literal> method is a clean stop process, which sends a signal to the guest domain operating system
+                asking it to shut down immediately. The guest will only be stopped once the operating system
+                has successfully shut down. The shutdown process is analogous to running a shutdown command on
+                a physical machine. There is also a <literal>shutdownFlags</literal> method which can, depending
+                on what the guest OS supports, can shutdown the domain and leave the object in a usable state.
+            </para>
+            <para>
+                The <literal>destroy</literal> method immediately terminates the guest domain. The destroy process is analogous to pulling
+                the plug on a physical machine.
+            </para>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Save">
+            <title>Suspend / Resume and Save / Restore</title>
+            <indexterm><primary>Suspend a domain</primary></indexterm>
+            <indexterm><primary>Resume a domain</primary></indexterm>
+            <indexterm><primary>Save a domain</primary></indexterm>
+            <indexterm><primary>Restore a domain</primary></indexterm>
+
+            <para>
+                <indexterm><primary>suspend</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>suspend</secondary></indexterm>
+                <indexterm><primary>resume</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>resume</secondary></indexterm>
+                the <literal>suspend</literal> and <literal>resume</literal> methods refer to the process of taking a running guest and
+                temporarily saving its memory state. At a later time, it is possible to resume the guest
+                to its original running state, continuingly execution where it left off. Suspend does not
+                save a persistent image of the guest's memory. For this, <literal>save</literal> is used.
+            </para>
+            <para>
+                <indexterm><primary>save</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>save</secondary></indexterm>
+                <indexterm><primary>restore</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>restore</secondary></indexterm>
+                The <literal>save</literal> and <literal>restore</literal> methods refer to the process of taking a running guest
+                and saving its memory state to a file. At some time later, it
+                is possible to restore the guest to its original running state,
+                continuing execution where it left off.
+            </para>
+
+            <para>
+                It is important to note that the save/restore methods only save the
+                memory state, no storage state is preserved. Thus when the guest
+                is restored, the underlying guest storage must be in exactly the
+                same state as it was when the guest was initially saved. For
+                basic usage this implies that a guest can only be restored once
+                from any given saved state image. To allow a guest to be restored
+                from the same saved state multiple times, the application must
+                also have taken a snapshot of the guest storage at time of saving,
+                and explicitly revert to this storage snapshot when restoring.
+                A future enhancement in libvirt will allow for an automated
+                snapshot capability which saves memory and storage state in
+                one operation.
+            </para>
+
+            <para>
+                The save operation requires the fully qualified path to a file
+                in which the guest memory state will be saved. This filename
+                is in the hypervisor's file system, not the libvirt client
+                application's. There's no difference between the two if managing
+                a local hypervisor, but it is critically important if connecting
+                remotely to a hypervisor across the network. The example that
+                follows demonstrates saving a guest called 'demo-guest' to a
+                file. It checks to verify that the guest is running before
+                saving, though this is technically redundant since the
+                hypervisor driver will do such a check itself.
+            </para>
+
+            <example>
+                <title>Saving a Guest Domain</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-20.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+            <para>
+                Some period of time later, the saved state file can then be
+                used to restart the guest where it left of, using the
+                virDomainRestore method. The hypervisor driver will return an
+                error if the guest is already running, however, it won't
+                prevent attempts to restore from the same state file multiple
+                times. As noted earlier, it is the applications' responsibility
+                to ensure the guest storage is in exactly the same state as it
+                was when the save image was created
+            </para>
+
+            <example>
+                <title>Restoring a Guest Domain</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-21.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Migration">
+            <title>Migration</title>
+            <indexterm><primary>Migration, domain</primary></indexterm>
+            <indexterm><primary>migrate</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>migrate</secondary></indexterm>
+            <indexterm><primary>migrateToURI</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>migrateToURI</secondary></indexterm>
+
+            <para>
+                <indexterm><primary>migrate</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>migrate</secondary></indexterm>
+                <indexterm><primary>migrateToURI</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>migrateToURI</secondary></indexterm>
+                Migration is the process of taking the image of a guest domain and moving it somewhere,
+                typically from a hypervisor on one node to a hypervisor on another node. There are two
+                methods for migration. The <literal>migrate</literal> method takes an established
+                hypervisor connection, and instructs the domain to migrate to this connection. The
+                <literal>migrateToUri</literal> method takes a URI specifying a hypervisor connection,
+                opens the connection, then instructions the domain to migrate to this connection. Both
+                these methods can be passed a parameter to specify live migration. For migration to
+                complete successfully, storage needs to be shared between the source and target hypervisors.
+            </para>
+            <para>
+                The first parameter of the <literal>migrate</literal> method specifies the connection to be used to the
+                target of the migration. This parameter is required.
+            </para>
+            <para>
+                The second parameter of the <literal>migrate</literal> method specifies a set of flags that control how the
+                migration takes place over the connection. If no flags are needed then the parameter should
+                be set to zero.
+            </para>
+            <para>
+            Flags may be one of more of the following: 
+            </para>
+            <simplelist>
+                <member>VIR_MIGRATE_LIVE</member>
+                <member>VIR_MIGRATE_PEER2PEER</member>
+                <member>VIR_MIGRATE_TUNNELLED</member>
+                <member>VIR_MIGRATE_PERSIST_DEST</member>
+                <member>VIR_MIGRATE_UNDEFINE_SOURCE</member>
+                <member>VIR_MIGRATE_PAUSED</member>
+                <member>VIR_MIGRATE_NON_SHARED_DISK</member>
+                <member>VIR_MIGRATE_NON_SHARED_INC</member>
+                <member>VIR_MIGRATE_CHANGE_PROTECTION</member>
+                <member>VIR_MIGRATE_UNSAFE</member>
+                <member>VIR_MIGRATE_OFFLINE</member>
+            </simplelist>
+            <para>
+                The third parameter of the <literal>migrate</literal> method specifies a new name for the domain on the target
+                of the migration. Not all hypervisors support this operation. If no rename of the domain is
+                required then the parameter should be set to <literal>None</literal>.
+            </para>
+            <para>
+                The third parameter of the <literal>migrate</literal> method specifies a new name for the domain on the target
+                of the migration. Not all hypervisors support this operation. If no rename of the domain is
+                required then the parameter can be set to <literal>None</literal>.
+            </para>
+            <para>
+                The forth parameter of the <literal>migrate</literal> method specifies the URI to be used as the
+                target of the migration. A URI is only required when the target system supports multiple
+                hypervisors. If there is only a single hypervisor on the target system then 
+                the parameter can be set to <literal>None</literal>.
+            </para>
+            <para>
+                The fifth and last parameter of the <literal>migrate</literal> method specifies the bandwidth in
+                MiB/s to be used. If this maximum is not needed then set the parameter to zero.
+            </para>
+            <para>
+                To migrate a guest domain to a connection that is already open use the <literal>migrate</literal>
+                method. An example follows:
+            </para>
+            <example>
+                <title>Migrate a Domain to an Open Connection</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-22.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                The <literal>migrateToURI</literal> method is similar except that the destination URI is the first
+                parameter instead of an existing connection.
+            </para>
+            <para>
+                To migrate a guest domain to a URI use the <literal>migrateToURI</literal>
+                method. An example follows:
+            </para>
+            <example>
+                <title>Migrate a Domain to an Open Connection</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-23.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                To migrate a live guest domain to a URI use the <literal>migrate</literal> or the
+                <literal>migrateToURI</literal> with the <literal>VIR_MIGRATE_LIVE</literal> flag set. An example follows:
+            </para>
+            <example>
+                <title>Migrate a Domain to an Open Connection</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-24.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Autostart">
+            <title>Autostart</title>
+            <indexterm><primary>Autostart</primary></indexterm>
+            <indexterm><primary>autostart</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>autostart</secondary></indexterm>
+
+            <para>
+                <indexterm><primary>setAutostart</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>setAutostart</secondary></indexterm>
+                A guest domain can be configured to autostart on a particular hypervisor, either by the
+                hypervisor itself or libvirt. In combination with managed save, this allows the operating
+                system on a guest domain to withstand host reboots without ever considering itself to have
+                rebooted. When libvirt restarts, the guest domain will be automatically restored. This is
+                handled by an API separate to regular save and restore, because paths must be known to
+                libvirt without user input.
+            </para>
+            <example>
+                <title>Set Autostart for a Domain</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-25.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Domain_Config">
+        <title>Domain Configuration</title>
+        <indexterm><primary>Domain XML configuration</primary></indexterm>
+        <indexterm><primary>Configuration, domain XML</primary></indexterm>
+
+        <para>
+            Domains are defined in libvirt using XML. Everything related only to the domain, such as
+            memory and CPU, is defined in the domain XML. The domain XML format is specified at
+            <ulink url="http://libvirt.org/formatdomain.html">http://libvirt.org/formatdomain.html</ulink>.
+            This can be accessed locally in <filename>/usr/share/doc/libvirt-devel-version/</filename>
+            if your system has the <package>libvirt-devel</package> package installed.
+        </para>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Domain_Config-Boot">
+            <title>Boot Modes</title>
+
+            <para>
+              Booting via the BIOS is available for hypervisors supporting full virtualization. In this
+              case the BIOS has a boot order priority (floppy, harddisk, cdrom, network) determining where
+              to obtain/find the boot image.
+            </para>
+            <example>
+                <title>Setting the Boot Mode</title>
+                <programlisting language="XML"><xi:include href="extras/Domains-Example-26.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Domain_Config-Memory_CPU">
+            <title>Memory / CPU Resources</title>
+
+            <para>
+                CPU and memory resources can be set at the time the domain is created or dynamically
+                while the domain is either active or inactive.
+            </para>
+            <para>
+                CPU resources are set at domain creation using tags in the XML definition of the domain.
+                The hypervisor defines a limit on the number of virtual CPUs that may not be exceeded
+                either at domain creation or at a later time. This maximum can be dependent on a number of
+                resource and hypervisor limits. An example of the CPU XML specification follows.
+            </para>
+            <programlisting language="XML"><xi:include href="extras/Domains-Example-27.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            <para>
+                Memory resources are also set at domain creation using tags in the XML definition of the domain.
+                Both the maximum and the current allocation of memory to the domain should be set.
+                An example of the Memory XML specification follows.
+            </para>
+            <programlisting language="XML"><xi:include href="extras/Domains-Example-28.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            <para>
+                After the domain has been created the number of virtual CPUs can be increased via the
+                <literal>setVcpus</literal> or the <literal>setVcpusFlags</literal> methods. The 
+                number CPUs may not exceed the hypervisor maximum discussed above.
+            </para>
+            <example>
+                <title>Set the number of maximum virtual cpus for a domain</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-29.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                Also after the domain has been created the amount of memory can be changes via the
+                <literal>setMemory</literal> or the <literal>setMemoryFlags</literal> methods. The 
+                amount of memory should be expressed in kilobytes.
+            </para>
+            <example>
+                <title>Set the amount of memory for a domain</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-30.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Monitoring">
+        <title>Monitoring Performance</title>
+
+        <para>
+            Statistical metrics are available for monitoring the utilization rates of domains, vCPUs, memory,
+            block devices, and network interfaces.
+        </para>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Monitoring-Domain_Block">
+            <title>Domain Block Device Performance</title>
+            <indexterm><primary>blockStats</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>blockStats</secondary></indexterm>
+
+            <para>
+                Disk usage statistics are provided by the
+                <literal>blockStats</literal> method:
+            </para>
+            <example>
+                <title>Get the disk block I/O statistics</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-31.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                The returned tuple contains the number of read
+                (write) requests issued, and the actual number of bytes
+                transferred. A block device is specified by the image
+                file path or the device bus name set by the devices/disk/target[@dev] 
+                element in the domain XML.
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Monitoring-vCPU">
+            <title>vCPU Performance</title>
+            <indexterm><primary>getCPUStats</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>getCPUStats</secondary></indexterm>
+
+            <para>
+                To obtain the individual VCPU statistics use the <literal>getCPUStats</literal> method.
+            </para>
+            <example>
+                <title>Get the individual CPU statistics</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-33.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                The <literal>getCPUStats</literal> takes one parameter, a boolean. When <literal>False</literal>
+                is used the statistics are reported as an aggregate of all the CPUs. Then <literal>True</literal>
+                is used then each CPU reports its individual statistics. Either way a <literal>list</literal>
+                is returned. The statistics are reported in nanoseconds. If a host has four CPUs, there will be
+                four entries in the cpu_stats list. 
+            </para>
+            <para>
+                <literal>getCPUStats(True)</literal> aggregates the statistics for all
+                CPUs on the host:
+            </para>
+            <example>
+                <title>Get the aggregate CPU statistics</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-34.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Monitoring-Memory">
+            <title>Memory Statistics</title>
+            <indexterm><primary>memoryStats</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>memoryStats</secondary></indexterm>
+
+            <para>
+                To obtain the amount of memory currently used by the domain you can use the
+                <literal>memoryStats</literal> method.
+            </para>
+            <example>
+                <title>Get the memory statistics</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-35.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                Note that the <literal>memoryStats</literal> returns a dictionary object. This object will
+                contain a variable number of entries depending on the hypervisor and guest domain capabilities.
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Monitoring-IO_stats">
+            <title>I/O Statistics</title>
+            <indexterm><primary>interfaceStats</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>interfaceStats</secondary></indexterm>
+
+             <para>
+                  To get the network statistics, you'll need the name
+                  of the host interface that the domain is connected to
+                  (usually vnetX). To find it, retrieve the domain XML
+                  description (libvirt modifies it at the runtime). Then,
+                  look for devices/interface/target[@dev] element(s):
+              </para>
+              <example>
+                  <title>Get the network I/O statistics</title>
+                  <programlisting language="Python"><xi:include href="extras/Domains-Example-32.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+              <para>
+                  The <literal>interfaceStats</literal> method returns the number
+                  of bytes (packets) received (transmitted), and the
+                  number of reception/transmission errors.
+              </para>
+
+          </section>
+
+      </section>
+
+      <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config">
+          <title>Device configuration</title>
+
+          <para>
+              Configuration information for a guest domain can be obtained by using the <literal>XMLDesc</literal>
+              method. This method returns the current description of a domain as an XML data stream.
+              This stream can then be parsed to obtain detailed information about the domain and all the
+              parts that make up the domain.
+          </para>
+          <para>
+              The flags parameter may contain any number of the following constants:
+          </para>
+          <simplelist>
+              <member>VIR_DOMAIN_XML_SECURE</member>
+              <member>VIR_DOMAIN_XML_INACTIVE</member>
+              <member>VIR_DOMAIN_XML_UPDATE_CPU</member>
+              <member>VIR_DOMAIN_XML_MIGRATABLE</member>
+          </simplelist>
+          <para>
+              The following example shows how to obtain some basic information about the domain.
+          </para>
+          <example>
+              <title>Get basic domain information from the domain's XML description</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-36.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+          </example>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Emulator">
+              <title>Emulator</title>
+
+              <para>
+                  To discover the guest domain's emulator find and display the content of the emulator XML tag.
+              </para>
+              <example>
+                  <title>Get domain's emulator information</title>
+                  <programlisting language="Python"><xi:include href="extras/Domains-Example-37.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+              <para>
+                  The XML configuration for the Emulator is typically as follows:
+              </para>
+              <example>
+                  <title>Domain Emulator XML information</title>
+                  <programlisting language="XML"><xi:include href="extras/Domains-Example-37.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+
+          </section>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Disks">
+              <title>Disks</title>
+              <indexterm><primary>Disk configuration</primary></indexterm>
+
+              <para>
+                  To discover the guest domain's disk(s) find and display the content of the disk XML tag(s).
+              </para>
+              <example>
+                  <title>Get domain's disk information</title>
+                  <programlisting language="Python"><xi:include href="extras/Domains-Example-39.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+              <para>
+                  The XML configuration for disks is typically as follows:
+              </para>
+              <example>
+                  <title>Domain Disk XML information</title>
+                  <programlisting language="XML"><xi:include href="extras/Domains-Example-39.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+
+          </section>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Networking">
+              <title>Networking</title>
+              <indexterm><primary>Networking configuration</primary></indexterm>
+
+              <para>
+                  To discover the guest domain's network interfaces find and display the interface XML tag.
+              </para>
+              <example>
+                  <title>Get domain's network interface information</title>
+                  <programlisting language="Python"><xi:include href="extras/Domains-Example-38.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+              <para>
+                  The XML configuration for network interfaces is typically as follows:
+              </para>
+              <example>
+                  <title>Domain network interface XML information</title>
+                  <programlisting language="XML"><xi:include href="extras/Domains-Example-38.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+
+          </section>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Mice">
+              <title>Mice, Keyboard &amp; Tablets</title>
+              <indexterm><primary>Mice configuration</primary></indexterm>
+              <indexterm><primary>Keyboard configuration</primary></indexterm>
+              <indexterm><primary>Tablets configuration</primary></indexterm>
+
+              <para>
+                  To discover the guest domain's input devices find and display the input XML tags.
+              </para>
+              <example>
+                  <title>Get domain's input device information</title>
+                  <programlisting language="Python"><xi:include href="extras/Domains-Example-40.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+              <para>
+                  The XML configuration for mouse, keyboard and tablet is typically as follows:
+              </para>
+              <example>
+                  <title>Domain mouse, keyboard and tablet XML information</title>
+                  <programlisting language="XML"><xi:include href="extras/Domains-Example-40.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+
+          </section>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-USB_Pass">
+              <title>USB Device Passthrough</title>
+              <indexterm><primary>USB passthrough</primary></indexterm>
+              <indexterm><primary>USB configuration</primary></indexterm>
+
+              <para>
+                  The USB device passthrough capability allows a physical USB device from
+                  the host machine to be assigned directly to a guest machine. The guest
+                  OS drivers can use the device hardware directly without relying on any
+                  driver capabilities from the host OS. 
+              </para>
+              <important>
+                  <title>Important</title>
+                  <para>
+                      USB devices are only inherited by the guest domain at boot time. newly activated USB
+                      devices can not be inherited from the host after the guest domain has booted.
+                  </para>
+              </important>
+
+              <para>
+                  Some caveats apply when using USB device passthrough. When a USB device is
+                  directly assigned to a guest, migration will not be possible, without
+                  first hot-unplugging the device from the guest. In addition
+                  libvirt does not guarantee that direct device assignment is secure, leaving
+                  security policy decisions to the underlying virtualization technology. 
+              </para>
+
+          </section>
+
+          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-PCI_Pass">
+              <title>PCI device passthrough</title>
+              <indexterm><primary>PCI device passthrough</primary></indexterm>
+              <indexterm><primary>PCI configuration</primary></indexterm>
+
+              <para>
+                  The PCI device passthrough capability allows a physical PCI device from
+                  the host machine to be assigned directly to a guest machine.The guest
+                  OS drivers can use the device hardware directly without relying on any
+                  driver capabilities from the host OS.
+              </para>
+
+              <para>
+                  Some caveats apply when using PCI device passthrough. When a PCI device is
+                  directly assigned to a guest, migration will not be possible, without
+                  first hot-unplugging the device from the guest. In addition
+                  libvirt does not guarantee that direct device assignment is secure, leaving
+                  security policy decisions to the underlying virtualization technology. Secure
+                  PCI device passthrough typically requires special hardware capabilities, such
+                  the VT-d feature for Intel chipset, or IOMMU for AMD chipsets.
+              </para>
+
+              <para>
+                  There are two modes in which a PCI device can be attached, "managed" or
+                  "unmanaged" mode, although at time of writing only KVM supports "managed"
+                  mode attachment. In managed mode, the configured device will be automatically
+                  detached from the host OS drivers when the guest is started, and then
+                  re-attached when the guest shuts down. In unmanaged mode, the device
+                  must be explicit detached ahead of booting the guest. The guest will
+                  refuse to start if the device is still attached to the host OS. The
+                  libvirt 'Node Device' APIs provide a means to detach/reattach PCI devices
+                  from/to host drivers. Alternatively the host OS may be configured to
+                  blacklist the PCI devices used for guest, so that they never get attached
+                  to host OS drivers.
+              </para>
+
+              <para>
+                  In both modes, the virtualization technology will always perform a reset
+                  on the device before starting a guest, and after the guest shuts down.
+                  This is critical to ensure isolation between host and guest OS. There
+                  are a variety of ways in which a PCI device can be reset. Some reset
+                  techniques are limited in scope to a single device/function, while
+                  others may affect multiple devices at once. In the latter case, it will
+                  be necessary to co-assign all affect devices to the same guest,
+                  otherwise a reset will be impossible to do safely. The node device
+                  APIs can be used to determine whether a device needs to be co-assigned,
+                  by manually detaching the device and then attempting to perform the
+                  reset operation. If this succeeds, then it will be possible to assign
+                  the device to a guest on its own. If it fails, then it will be necessary
+                  to co-assign the device will others on the same PCI bus.
+              </para>
+
+              <para>
+                  A PCI device is attached to a guest using the 'hostdevice' element.
+                  The 'mode' attribute should always be set to 'subsystem', and the
+                  'type' attribute to 'pci'. The 'managed' attribute can be either
+                  'yes' or 'no' as required by the application. Within the 'hostdevice'
+                  element there is a 'source' element and within that a further 'address'
+                  element is used to specify the PCI device to be attached. The address
+                  element expects attributes for 'domain', 'bus', 'slot' and 'function'.
+                  This is easiest to see with a short example
+              </para>
+
+              <example>
+                  <title>Get domain's input device information</title>
+                  <programlisting language="XML"><xi:include href="extras/Domains-Example-41.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              </example>
+
+          </section>
+
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config">
+        <title>Live Configuration Change</title>
+<!--
+        <para>
+            TBD
+        </para>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config-Memory">
+            <title>Memory Ballooning</title>
+
+            <para>
+                TBD
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config-CPU">
+            <title>CPU hotplug</title>
+
+            <para>
+                TBD
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config-Device_Plug">
+            <title>Device hotplug / unplug</title>
+
+            <para>
+                TBD
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config-Device_Media">
+            <title>Device media change</title>
+
+            <para>
+                TBD
+            </para>
+
+        </section>
+-->
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Live_Config-Block_Jobs">
+            <title>Block Device Jobs</title>
+            <indexterm><primary>Block device jobs</primary></indexterm>
+
+            <para>
+                <indexterm><primary>blockPull</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>blockPull</secondary></indexterm>
+                Libvirt provides a generic Block Job methods that can be used to initiate
+                and manage operations on disks that belong to a domain.  Jobs are
+                started by calling the function associated with the desired operation
+                (eg.  <literal>blockPull</literal>).  Once started, all block
+                jobs are managed in the same manner.  They can be aborted, throttled,
+                and queried.  Upon completion, an asynchronous event is issued to
+                indicate the final status.
+            </para>
+
+            <para>
+                The following block jobs can be started:
+            </para>
+            <orderedlist>
+                <listitem>
+                    <para>
+                        <literal>blockPull()</literal> starts a block pull
+                        operation for the specified disk.  This operation is valid only for
+                        specially configured disks. <literal>blockPull</literal> will populate a disk image
+                        with data from its backing image.  Once all data from its backing
+                        image has been pulled, the disk no longer depends on a backing
+                        image.
+                    </para>
+                </listitem>
+            </orderedlist>
+
+            <para>
+                <indexterm><primary>blockJobInfo</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>blockJobInfo</secondary></indexterm>
+                A disk can be queried for active block jobs by using
+                <literal>blockJobInfo</literal>.  If found, job
+                information is reported in a structure that contains: the job type,
+                bandwidth throttling setting, and progress information.
+            </para>
+
+            <para>
+                <indexterm><primary>blockJobAbort</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>blockJobAbort</secondary></indexterm>
+                <literal>virDomainBlockJobAbort()</literal> can be used to cancel the
+                active block job on the specified disk.
+            </para>
+
+            <para>
+                <indexterm><primary>blockJobSetSpeed</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>blockJobSetSpeed</secondary></indexterm>
+                Use <literal>blockJobSetSpeed()</literal> to limit the amount
+                of bandwidth that a block job may consume.  Bandwidth is specified in
+                units of MB/sec.
+            </para>
+
+            <example>
+                <title>Get domain's input device information</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-42.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+        </section>
+
+    </section>
+<!--
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Tuning">
+        <title>Tuning</title>
+
+        <para>
+            TBD
+        </para>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Tuning-Schedular">
+            <title>Scheduler Parameters</title>
+
+            <para>
+                TBD
+            </para>
+
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Tuning-NUMA">
+            <title>NUMA Placement</title>
+
+            <para>
+              TBD
+            </para>
+
+        </section>
+
+    </section>
+-->
+</chapter>
