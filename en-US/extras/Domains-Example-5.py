@@ -13,7 +13,7 @@ if conn == None:
     print('Failed to get a list of domain names', file=sys.stderr)
 
 domainIDs = conn.listDomainsID()
-if conn == None:
+if domainIDs == None:
     print('Failed to get a list of domain IDs', file=sys.stderr)
 if len(domainIDs) != 0:
     for domainID in domainIDs:

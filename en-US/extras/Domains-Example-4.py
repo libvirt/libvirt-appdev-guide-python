@@ -9,7 +9,7 @@ if conn == None:
     exit(1)
 
 domainIDs = conn.listDomainsID()
-if conn == None:
+if domainIDs == None:
     print('Failed to get a list of domain IDs', file=sys.stderr)
 
 print("Active domain IDs:")

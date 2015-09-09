@@ -10,7 +10,7 @@ if conn == None:
 
 domainUUID = '00311636-7767-71d2-e94a-26e7b8bad250'
 dom = conn.lookupByUUID(domainUUID)
-if conn == None:
+if dom == None:
     print('Failed to get the domain object', file=sys.stderr)
 
 conn.close()
