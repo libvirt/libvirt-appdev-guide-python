@@ -9,7 +9,7 @@ if conn == None:
     exit(1)
 
 domainName = 'someguest'
-dom = conn.lookupByName(domainname)
+dom = conn.lookupByName(domainName)
 if dom == None:
     print('Failed to get the domain object', file=sys.stderr)
 
