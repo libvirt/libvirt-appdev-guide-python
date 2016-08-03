@@ -364,6 +364,12 @@
                         can then be used to boot it.
                     </para>
 
+                    <para>
+                        Currently the <literal>defineGuestDomain</literal> method defines a flags
+                        parameter that is unused. A value of <literal>0</literal> should always be supplied
+                        for that parameter. This may be changed in later versions of the method.
+                    </para>
+
                     <example>
                         <title>Defining and Booting a Persistent Guest Domain</title>
                         <programlisting language="Python"><xi:include href="extras/Domains-Example-8.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>

@@ -1,6 +1,6 @@
 <!ENTITY PRODUCT "Documentation">
 <!ENTITY BOOKID "doc-libvirt_application_development_guide_using_python">
-<!ENTITY YEAR "2015">
+<!ENTITY YEAR "2015-2016">
 <!ENTITY HOLDER "Fedora Project">
 <!ENTITY BZURL "<ulink url='https://bugzilla.redhat.com/enter_bug.cgi?product=&PRODUCT;&amp;component=&BOOKID;'>https://bugzilla.redhat.com</ulink>" >
 <!ENTITY IGURL '<ulink url="http://docs.fedoraproject.org/" />'>
