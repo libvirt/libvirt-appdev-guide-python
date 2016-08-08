@@ -1289,6 +1289,156 @@ command -p port [-l username] hostname netcat -U socket
             </example>
         </section>
 
+        <section>
+            <title>getMemoryParameters</title>
+            <indexterm><primary>getMemoryParameters, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getMemoryParameters</secondary></indexterm>
+            <para>
+                This method returns all the available memory parameters as strings.
+            </para>
+            <example id="Example-ConnectGetParameters">
+                <title>Using getFreePages</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-25.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getMemoryStats</title>
+            <indexterm><primary>getMemoryStats, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getMemoryStats</secondary></indexterm>
+            <para>
+                This method returns the memory statistics for either a single or all and single node (host).
+                It returns a Python list of strings.
+            </para>
+            <example id="Example-ConnectGetMemoryStats">
+                <title>Using getMemoryStats</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-26.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getSecurityModel</title>
+            <indexterm><primary>getSecurityModel, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getSecurityModel</secondary></indexterm>
+            <para>
+                This method returns the security model (as a list) currently in use (if any).
+            </para>
+            <example id="Example-ConnectGetSecurityModel">
+                <title>Using getSecurityModel</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-27.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getSysinfo</title>
+            <indexterm><primary>getSysinfo, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getSysinfo</secondary></indexterm>
+            <para>
+                This method returns the system info in the form of an XML definition. The format is the same
+                as for a Domain XML definition.
+            </para>
+            <example id="Example-ConnectGetSysinfo">
+                <title>Using getSysinfo</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-28.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
     </section>
+
+    <section id="libvirt_application_development_guide_using_python-Connections-Host_Interface_Manipulation">
+        <title>Host Interface manipulation</title>
+        <indexterm><primary>Host interface manipulation, Connection</primary></indexterm>
+        <indexterm><primary>Connections</primary>
+        <secondary>Host interface manipulation</secondary></indexterm>
+        <para>
+            There are various Python <literal>virConnection</literal> methods that can be used to 
+            create/manipulate/destroy node (host) interfaces. Both persistent and temporary interfaces may
+            be created.
+        </para>
+
+        <section>
+            <title>interfaceDefineXML</title>
+            <indexterm><primary>interfaceDefineXML, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>interfaceDefineXML</secondary></indexterm>
+            <para>
+                This method defines an inactive persistent physical host interface or modify an existing
+                persistent one from the XML description.
+            </para>
+            <para>
+                Normally this change in the interface configuration is immediately permanent/persistent, but if
+                the <literal>changeBegin</literal> method has been previously called (i.e. if an interface
+                config transaction is open), the new interface definition will only become permanent if
+                <literal>changeCommit</literal> method is called prior to the next reboot of the system
+                running libvirtd. Prior to that time, it can be explicitly removed using
+                <literal>changeRollback</literal> method, or will be automatically removed during the next
+                reboot of the system running libvirtd.
+            </para>
+            <example id="Example-ConnectInterfaceDefineXML">
+                <title>Using interfaceDefineXML</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-29.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>changeRollback</title>
+            <indexterm><primary>changeRollback, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>changeRollback</secondary></indexterm>
+            <para>
+                This method rolls back all defined interface definitions since the last call to the
+                <literal>changeCommit</literal> method was called.
+            </para>
+            <para>
+                Note: An error will be thrown if no interface definitions are pending.
+            </para>
+            <example id="Example-ConnectChangeRollback">
+                <title>Using changeRollback</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-30.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>changeBegin</title>
+            <indexterm><primary>changeBegin, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>changeBegin</secondary></indexterm>
+            <para>
+                This method creates a restore point to which one can return later by calling
+                <literal>changeRollback</literal> method. This function should be called before any transaction
+                with interface configuration. Once it is known that a new configuration works, it can be committed
+                via the <literal>changeCommit</literal> method, which frees the restore point.
+            </para>
+            <para>
+                If the <literal>changeBegin</literal> method is called when a transaction is already opened,
+                an error will be thrown.
+            </para>
+            <example id="Example-ConnectChangeBegin">
+                <title>Using changeBegin</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-31.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>changeCommit</title>
+            <indexterm><primary>changeCommit, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>changeCommit</secondary></indexterm>
+            <para>
+                This commits the changes made to interfaces and frees the restore point created by
+                the <literal>changeBegin</literal> method.
+            </para>
+            <example id="Example-ConnectChangeCommit">
+                <title>Using changeCommit</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-32.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+    </section>
+
 
 </chapter>
