@@ -1,4 +1,4 @@
-# Example-27.py
+# Example-33.py
 from __future__ import print_function
 import sys
 import libvirt
@@ -8,9 +8,12 @@ if conn == None:
     print('Failed to open connection to qemu:///system', file=sys.stderr)
     exit(1)
 
-model = conn.getSecurityModel()
-
-print(model)
+try:
+    iface = conn.interfaceLookupByMACString("aa:bb:cc:dd:ee:ff")
+except:
+    print("No interface was found.")
+else:
+    print(iface)
 
 conn.close()
 exit(0)

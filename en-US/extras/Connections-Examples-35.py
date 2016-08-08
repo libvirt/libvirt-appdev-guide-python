@@ -1,4 +1,4 @@
-# Example-32.py
+# Example-35.py
 from __future__ import print_function
 import sys
 import libvirt
@@ -8,7 +8,10 @@ if conn == None:
     print('Failed to open connection to qemu:///system', file=sys.stderr)
     exit(1)
 
-conn.changeCommit()
+ifaces = conn.listInterfaces()
+
+for iface in ifaces:
+    print(iface)
 
 conn.close()
 exit(0)

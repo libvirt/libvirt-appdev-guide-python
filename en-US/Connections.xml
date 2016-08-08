@@ -1361,6 +1361,21 @@ command -p port [-l username] hostname netcat -U socket
         </para>
 
         <section>
+            <title>listDefinedInterfaces</title>
+            <indexterm><primary>listDefinedInterfaces, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>listDefinedInterfaces</secondary></indexterm>
+            <para>
+                This method lists defined interfaces. The method returns a Python list of the discovered
+                interfaces.
+            </para>
+            <example id="Example-ConnectListDefinedInterfaces">
+                <title>Using listDefinedInterfaces</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-35.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
             <title>interfaceDefineXML</title>
             <indexterm><primary>interfaceDefineXML, Connection</primary></indexterm>
             <indexterm><primary>Connections</primary>
@@ -1435,6 +1450,44 @@ command -p port [-l username] hostname netcat -U socket
             <example id="Example-ConnectChangeCommit">
                 <title>Using changeCommit</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-32.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>interfaceLookupByMACString</title>
+            <indexterm><primary>interfaceLookupByMACString, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>interfaceLookupByMACString</secondary></indexterm>
+            <para>
+                This method tries to lookup an interface on the given hypervisor based on its MAC address.
+                If the interface is found then the method returns a <literal>virInterface</literal>
+                instance.
+            </para>
+            <para>
+                If the specified interface is not found then an error will be thrown.
+            </para>
+            <example id="Example-ConnectInterfaceLookupByMACString">
+                <title>Using interfaceLookupByMACString</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-33.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>interfaceLookupByName</title>
+            <indexterm><primary>interfaceLookupName, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>interfaceLookupByName</secondary></indexterm>
+            <para>
+                This method tries to lookup an interface on the given hypervisor based on its name.
+                If the interface is found then the method returns a <literal>virInterface</literal>
+                instance.
+            </para>
+            <para>
+                If the specified interface is not found then an error will be thrown.
+            </para>
+            <example id="Example-ConnectInterfaceLookupByName">
+                <title>Using interfaceLookupByName</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-34.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
 
