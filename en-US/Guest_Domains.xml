@@ -734,6 +734,19 @@
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-21.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
 
+            <note>
+                <title>
+                    Restoring a guest domain does not update the domain's current dat/time
+                </title>
+                <para>
+                    When a guest domain is retored it is returned to the state when it was saved. This will
+                    include the date and time when the domain was saved. The guest domain usually will not
+                    be able to determine that a time period has passed since it was saved. This means the
+                    current time will not be automatically updated either during or after the the restore
+                    operation.
+                </para>
+            </note>
+
         </section>
 
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Migration">

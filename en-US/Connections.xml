@@ -85,10 +85,10 @@ conn = libvirt.openReadOnly(name)</programlisting>
                 calls that are allowed, and is typically useful for monitoring
                 applications that should not be allowed to make changes. As with
                 <literal>open</literal>, this method has no scope for authentication callbacks, so
-                relies on credentials.
+                it relies on credentials.
             </para>
             <example>
-                <title>Using ppenReadOnly</title>
+                <title>Using openReadOnly</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
             <para>
@@ -113,7 +113,7 @@ conn = libvirt.openReadOnly(name)</programlisting>
                 <parameter>VIR_CONNECT_RO</parameter> flag if desired. A simple example Python program that uses
                 <literal>openAuth</literal> with username and password credentials follows. As with
                 <literal>open</literal>, this method has no scope for authentication callbacks, so
-                relies on credentials.
+                it relies on credentials.
             </para>
             <example id="openAuth-Example1">
                 <title>Using openAuth</title>
@@ -161,6 +161,15 @@ auth_tcp = "sasl"</screen>
                 longer required. Connections are reference counted objects, so there should be a
                 cooresponding call to the <literal>close</literal> method for each
                 <literal>open</literal> function call.
+            </para>
+            <para>
+                Connections are reference counted; the count is explicitly
+                increased by the initial open (<literal>virConnectOpen</literal>, <literal>virConnectOpenAuth</literal>,
+                and the like) as well as <literal>virConnectRef</literal>; it is also temporarily
+                increased by other API that depend on the connection remaining
+                alive.  The open and every <literal>virConnectRef</literal> call should have a
+                matching <literal>virConnectClose</literal>, and all other references will be released
+                after the corresponding operation completes.
             </para>
             <example id="close-Example">
                 <title>Using close with additional references</title>
@@ -914,9 +923,10 @@ command -p port [-l username] hostname netcat -U socket
             <secondary>getHost</secondary></indexterm>
             <para>
                 The <command>getHostname</command> method can be used to obtain the hostname
-                of the virtualization host as returned by gethostname(2).  It invoked via a the
-                virConnection instance and, if successful, returns a string
-                containing the hostname. If an error occurred, NULL will be returned
+                of the virtualization host as returned by <code>gethostname()</code>.  It invoked via a the
+                <literal>virConnection</literal>instance and, if successful, returns a string
+                containing the hostname possibly expanded to a fully-qualified domain name.
+                If an error occurred, NULL will be returned
                 instead.  It is the responsibility of the caller to free the memory
                 returned from this method call. The following code demonstrates the use of
                 <command>getHostname</command>:
@@ -986,7 +996,7 @@ command -p port [-l username] hostname netcat -U socket
                             </entry>
                             <entry>
                                 <para>
-                                    memory size in kilobytes
+                                    memory size in megabytes
                                 </para>
                             </entry>
                         </row>
@@ -1108,10 +1118,23 @@ command -p port [-l username] hostname netcat -U socket
             <indexterm><primary>Connections</primary>
             <secondary>getVersion</secondary></indexterm>
             <para>
-                The <command>getVersion</command> method can be used to obtain the version of
-                the host virtualization software in use. If successful it returns a Python string
-                with the version, otherwise it returns <literal>None</literal>.
-                The following code demonstrates the use of <command>getVersion</command>:
+                If no name parameter is passed (or name is None) then the
+                version of the libvirt library is returned as an integer.
+            </para>
+            <para>
+                If a name is passed and it refers to a driver linked to the
+                libvirt library, then this returns a tuple of (library version,
+                driver version). The returned name is merely the driver
+                name; for example, both KVM and QEMU guests are serviced by the
+                driver for the <code>qemu://</code> URI, so a return of "QEMU" does not indicate
+                whether KVM acceleration is present.
+            </para>
+            <para>
+                If the name passed refers to a non-existent driver, then you
+                will get the exception 'no support for hypervisor'.
+            </para>
+            <para>
+                Versions numbers are integers: 1000000*major + 1000*minor + release.
             </para>
             <example id="Example-ConnectGetVersion">
                 <title>Using virConnectGetVersion</title>
@@ -1193,6 +1216,76 @@ command -p port [-l username] hostname netcat -U socket
             <example id="Example-ConnectIsSecure">
                 <title>Using virConnectIsSecure</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-19.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>isAlive</title>
+            <indexterm><primary>isAlve, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>isAlive</secondary></indexterm>
+            <para>
+                This method determines if the connection to the hypervisor is still alive.
+                A connection will be classed as alive if it is either local, or running
+                over a channel (TCP or UNIX socket) which is not closed.
+            </para>
+            <example id="Example-ConnectIsAlive">
+                <title>Using isAlive</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-21.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>compareCPU</title>
+            <indexterm><primary>compareCPU, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>compareCPU</secondary></indexterm>
+            <para>
+                This method compares the given CPU description with the host CPU.
+            </para>
+            <example id="Example-ConnectCompareCPU">
+                <title>Using compareCPU</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-22.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getFreeMemory</title>
+            <indexterm><primary>getFreeMemory, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getFreeMemory</secondary></indexterm>
+            <para>
+                This method compares the given CPU description with the host CPU.
+                Note: most libvirt APIs provide memory sizes in kibibytes, but in this function the returned
+                value is in bytes. Divide by 1024 as necessary.
+            </para>
+            <example id="Example-ConnectGetFreeMemory">
+                <title>Using getFreeMemory</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-23.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getFreePages</title>
+            <indexterm><primary>getFreePages, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getFreePages</secondary></indexterm>
+            <para>
+                This method queries the host system for free pages of specified size. For the input, the
+                <literal>pages</literal> argument is a Python list of page sizes that caller is
+                interested in (the size unit is kibibytes, so e.g. pass 2048 for 2MB), then
+                the <literal>start</literal> argument
+                refers to the first NUMA node that info should be collected from, and
+                <literal>cellcount</literal> argument tells how many consecutive nodes should be queried.
+                The function returns a Python list containing an indicator of whether or not pages of 
+                the specified input sizes are available.
+            </para>
+            <para>
+                An error will be thrown if the host system does not support memory pages of the size requested.
+            </para>
+            <example id="Example-ConnectGetFreePages">
+                <title>Using getFreePages</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-24.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
 

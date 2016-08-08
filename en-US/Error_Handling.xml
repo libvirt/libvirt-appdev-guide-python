@@ -121,9 +121,16 @@
         <indexterm><primary>Functions</primary>
         <secondary>registerErrorHandler</secondary></indexterm>
         <para>
-            Libvirt also supports setting up an error handler function. This is done using the libvirt
+            Libvirt also supports setting up an error handler Python function. This is done using the libvirt
             function <literal>registerErrorHandler</literal>.
-            An example of this follows:
+            Returns 1 in case of success.
+        </para>
+        <para>
+            The registered function is called back as <code>f(ctx, error)</code>, with <literal>error</literal>
+            being a list of information about the error being raised.
+        </para>
+        <para>
+            An example of this function follows:
         </para>
         <example>
             <title>Subclassing virError</title>

@@ -180,6 +180,21 @@
               <programlisting language="Python"><xi:include href="extras/NetworkInterface-Example-10.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
           </example>
         </section>
+
+      <section id="libvirt_application_development_guide_using_python-Network_Interface-Addresses">
+          <title>Retrieving Interface Network Addresses</title>
+
+          <para>
+              You may find yourself with a <literal>virDomain</literal> instance, and need the IP
+              addresses of one or more guest domain interfaces.
+              The <literal>interfaceAddresses</literal> method provides this capability.
+          </para>
+
+          <example>
+              <title>Fetching the IP addresses of all the guest domain network interfaces</title>
+              <programlisting language="Python"><xi:include href="extras/NetworkInterface-Example-14.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+          </example>
+        </section>
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Network_Interfaces-Configs">
