@@ -1347,6 +1347,53 @@ command -p port [-l username] hostname netcat -U socket
             </example>
         </section>
 
+        <section>
+            <title>getCPUMap</title>
+            <indexterm><primary>getCPUMap, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getCPUMap</secondary></indexterm>
+            <para>
+                Get a CPU map of host node CPUs.
+            </para>
+            <example id="Example-ConnectGetCPUMap">
+                <title>Using getCPUMap</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-29.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getCPUStats</title>
+            <indexterm><primary>getCPUStats, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getCPUStats</secondary></indexterm>
+            <para>
+                Get the stats for on or all CPUs.
+            </para>
+            <para>
+                This method requires a single argument that represents the CPU number to fetch the statistics
+                for a single CPU, or the value <literal>VIR_NODE_CPU_STATS_ALL_CPUS</literal> to fetch a
+                Python list of statistics for all CPUs.
+            </para>
+            <example id="Example-ConnectGetCPUStats">
+                <title>Using getCPUStats</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-30.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>getCPUModelNames</title>
+            <indexterm><primary>getCPUModelNames, Connection</primary></indexterm>
+            <indexterm><primary>Connections</primary>
+            <secondary>getCPUModelNames</secondary></indexterm>
+            <para>
+                Get the list of CPU names that match an architecture type.
+            </para>
+            <example id="Example-ConnectGetCPUModelNames">
+                <title>Using getCPUModelNames</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-31.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
     </section>
 
 </chapter>
