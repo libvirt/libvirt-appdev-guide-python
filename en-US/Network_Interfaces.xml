@@ -260,6 +260,60 @@
                 <programlisting language="Python"><xi:include href="extras/NetworkInterface-Example-12.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
+
+        <section>
+            <title>changeRollback</title>
+            <indexterm><primary>changeRollback, Connection</primary></indexterm>
+            <indexterm><primary>Interfaces</primary>
+            <secondary>changeRollback</secondary></indexterm>
+            <para>
+                This method rolls back all defined interface definitions since the last call to the
+                <literal>changeCommit</literal> method was called.
+            </para>
+            <para>
+                Note: An error will be thrown if no interface definitions are pending.
+            </para>
+            <example id="Example-ConnectChangeRollback">
+                <title>Using changeRollback</title>
+                <programlisting language="Python"><xi:include href="extras/Networkinterface-Example-15.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>changeBegin</title>
+            <indexterm><primary>changeBegin, Connection</primary></indexterm>
+            <indexterm><primary>Interfaces</primary>
+            <secondary>changeBegin</secondary></indexterm>
+            <para>
+                This method creates a restore point to which one can return later by calling
+                <literal>changeRollback</literal> method. This function should be called before any transaction
+                with interface configuration. Once it is known that a new configuration works, it can be committed
+                via the <literal>changeCommit</literal> method, which frees the restore point.
+            </para>
+            <para>
+                If the <literal>changeBegin</literal> method is called when a transaction is already opened,
+                an error will be thrown.
+            </para>
+            <example id="Example-ConnectChangeBegin">
+                <title>Using changeBegin</title>
+                <programlisting language="Python"><xi:include href="extras/Networkinterface-Example-16.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section>
+            <title>changeCommit</title>
+            <indexterm><primary>changeCommit, Connection</primary></indexterm>
+            <indexterm><primary>Interfaces</primary>
+            <secondary>changeCommit</secondary></indexterm>
+            <para>
+                This commits the changes made to interfaces and frees the restore point created by
+                the <literal>changeBegin</literal> method.
+            </para>
+            <example id="Example-ConnectChangeCommit">
+                <title>Using changeCommit</title>
+                <programlisting language="Python"><xi:include href="extras/Networkinterface-Example-17.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Network_Interfaces-Lifecycle">
