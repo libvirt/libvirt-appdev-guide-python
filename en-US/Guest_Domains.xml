@@ -66,15 +66,6 @@
         </para>
 
         <para>
-            <indexterm><primary>lookupByName, Domains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>lookupByName</secondary></indexterm>
-            <indexterm><primary>lookupByID, Domains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>lookupByID</secondary></indexterm>
-            <indexterm><primary>lookupByUUID, Domains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>lookupByUUID</secondary></indexterm>
             Once an application has a unique identifier for a domain, it will
             often want to obtain the corresponding <literal>virDomain</literal>
             object. There are three, imaginatively named, methods to do lookup
@@ -87,16 +78,30 @@
             details of the error if required.
         </para>
 
+        <indexterm><primary>Domains</primary>
+        <secondary>lookupByID</secondary></indexterm>
+        <indexterm><primary>lookupByID, Domains</primary></indexterm>
         <example>
             <title>Fetching a domain object from an ID</title>
             <programlisting language="Python"><xi:include href="extras/Domains-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
 
+        <para>
+            It should be noted that the <literal>lookupByID</literal> method will not work if the domain is not active.
+            Inactive domains all have an ID of <code>-1</code>.
+        </para>
+
+            <indexterm><primary>lookupByName, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>lookupByName</secondary></indexterm>
         <example>
             <title>Fetching a domain object from a name</title>
             <programlisting language="Python"><xi:include href="extras/Domains-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
 
+            <indexterm><primary>lookupByUUID, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>lookupByUUID</secondary></indexterm>
         <example>
             <title>Fetching a domain object from a UUID</title>
             <programlisting language="Python"><xi:include href="extras/Domains-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -288,12 +293,6 @@
                 <title>Methods For Provisioning</title>
 
                 <para>
-                    <indexterm><primary>createXML</primary></indexterm>
-                    <indexterm><primary>Domains</primary>
-                    <secondary>createXML</secondary></indexterm>
-                    <indexterm><primary>defineXML</primary></indexterm>
-                    <indexterm><primary>Domains</primary>
-                    <secondary>defineXML</secondary></indexterm>
                     There are up to three methods involved in provisioning guests.
                     The <literal>createXML</literal> method will create
                     and immediately boot a new transient guest domain. When this
@@ -310,6 +309,9 @@
 
                 <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Provisioning-apis-Booting_Transient_Domain">
                     <title>Booting a Transient Guest Domain</title>
+                    <indexterm><primary>createXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>createXML</secondary></indexterm>
                     <para>
                         To boot a transient guest domain, simply requires a connection to
                         libvirt and a string containing the XML document describing the
@@ -396,6 +398,12 @@
                     network interface and a video card using VNC for display.
                 </para>
 
+                <indexterm><primary>create</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>create</secondary></indexterm>
+                <indexterm><primary>defineXML</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>defineXML</secondary></indexterm>
                 <programlisting language="XML"><xi:include href="extras/Domains-Example-9.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
                 <important>
                     <para>
@@ -457,6 +465,12 @@
                         booted.
                     </para>
 
+                    <indexterm><primary>create</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>create</secondary></indexterm>
+                    <indexterm><primary>defineXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>defineXML</secondary></indexterm>
                     <example>
                         <title>Defining and Booting a Persistent Guest Domain</title>
                         <programlisting language="Python"><xi:include href="extras/Domains-Example-12.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -516,6 +530,12 @@
                         booted.
                     </para>
 
+                    <indexterm><primary>create</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>create</secondary></indexterm>
+                    <indexterm><primary>defineXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>defineXML</secondary></indexterm>
                     <example>
                         <title>PXE Boot Provisioning</title>
                         <programlisting language="Python"><xi:include href="extras/Domains-Example-14.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -617,6 +637,9 @@
                         be recreated, this time using a persistent configuration
                     </para>
 
+                    <indexterm><primary>createXML</primary></indexterm>
+                    <indexterm><primary>Domains</primary>
+                    <secondary>createXML</secondary></indexterm>
                     <example>
                         <title>Kernel Boot Provisioning for a Persistent Guest Domain</title>
                         <programlisting language="Python"><xi:include href="extras/Domains-Example-19.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -735,9 +758,7 @@
             </example>
 
             <note>
-                <title>
-                    Restoring a guest domain does not update the domain's current dat/time
-                </title>
+                <title>Restoring a guest domain does not update the domain's current dat/time</title>
                 <para>
                     When a guest domain is retored it is returned to the state when it was saved. This will
                     include the date and time when the domain was saved. The guest domain usually will not
@@ -760,12 +781,6 @@
             <secondary>migrateToURI</secondary></indexterm>
 
             <para>
-                <indexterm><primary>migrate</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>migrate</secondary></indexterm>
-                <indexterm><primary>migrateToURI</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>migrateToURI</secondary></indexterm>
                 Migration is the process of taking the image of a guest domain and moving it somewhere,
                 typically from a hypervisor on one node to a hypervisor on another node. There are two
                 methods for migration. The <literal>migrate</literal> method takes an established
@@ -852,15 +867,11 @@
 
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Autostart">
             <title>Autostart</title>
-            <indexterm><primary>Autostart</primary></indexterm>
-            <indexterm><primary>autostart</primary></indexterm>
+            <indexterm><primary>setAutostart</primary></indexterm>
             <indexterm><primary>Domains</primary>
-            <secondary>autostart</secondary></indexterm>
+            <secondary>setAutostart</secondary></indexterm>
 
             <para>
-                <indexterm><primary>setAutostart</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>setAutostart</secondary></indexterm>
                 A guest domain can be configured to autostart on a particular hypervisor, either by the
                 hypervisor itself or libvirt. In combination with managed save, this allows the operating
                 system on a guest domain to withstand host reboots without ever considering itself to have
@@ -929,6 +940,9 @@
                 <literal>setVcpus</literal> or the <literal>setVcpusFlags</literal> methods. The 
                 number CPUs may not exceed the hypervisor maximum discussed above.
             </para>
+            <indexterm><primary>setVcpus</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>setVcpus</secondary></indexterm>
             <example>
                 <title>Set the number of maximum virtual cpus for a domain</title>
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-29.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -938,6 +952,9 @@
                 <literal>setMemory</literal> or the <literal>setMemoryFlags</literal> methods. The 
                 amount of memory should be expressed in kilobytes.
             </para>
+            <indexterm><primary>setMemory</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>setMemory</secondary></indexterm>
             <example>
                 <title>Set the amount of memory for a domain</title>
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-30.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -1078,6 +1095,9 @@
           <para>
               The following example shows how to obtain some basic information about the domain.
           </para>
+          <indexterm><primary>XMLDesc</primary></indexterm>
+          <indexterm><primary>Domains</primary>
+          <secondary>XMLDesc</secondary></indexterm>
           <example>
               <title>Get basic domain information from the domain's XML description</title>
               <programlisting language="Python"><xi:include href="extras/Domains-Example-36.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -1085,6 +1105,9 @@
 
           <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Emulator">
               <title>Emulator</title>
+                <indexterm><primary>XMLDesc</primary></indexterm>
+                <indexterm><primary>Domains</primary>
+                <secondary>XMLDesc</secondary></indexterm>
 
               <para>
                   To discover the guest domain's emulator find and display the content of the emulator XML tag.
@@ -1117,6 +1140,9 @@
               <para>
                   The XML configuration for disks is typically as follows:
               </para>
+              <indexterm><primary>XMLDesc</primary></indexterm>
+              <indexterm><primary>Domains</primary>
+              <secondary>XMLDesc</secondary></indexterm>
               <example>
                   <title>Domain Disk XML information</title>
                   <programlisting language="XML"><xi:include href="extras/Domains-Example-39.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -1138,6 +1164,9 @@
               <para>
                   The XML configuration for network interfaces is typically as follows:
               </para>
+              <indexterm><primary>XMLDesc</primary></indexterm>
+              <indexterm><primary>Domains</primary>
+              <secondary>XMLDesc</secondary></indexterm>
               <example>
                   <title>Domain network interface XML information</title>
                   <programlisting language="XML"><xi:include href="extras/Domains-Example-38.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -1161,6 +1190,9 @@
               <para>
                   The XML configuration for mouse, keyboard and tablet is typically as follows:
               </para>
+              <indexterm><primary>XMLDesc</primary></indexterm>
+              <indexterm><primary>Domains</primary>
+              <secondary>XMLDesc</secondary></indexterm>
               <example>
                   <title>Domain mouse, keyboard and tablet XML information</title>
                   <programlisting language="XML"><xi:include href="extras/Domains-Example-40.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>

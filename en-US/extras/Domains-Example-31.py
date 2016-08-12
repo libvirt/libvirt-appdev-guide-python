@@ -15,7 +15,8 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-rd_req, rd_bytes, wr_req, wr_bytes, err = dom.blockStats('/path/to/linux-0.2.img')
+rd_req, rd_bytes, wr_req, wr_bytes, err = \
+dom.blockStats('/path/to/linux-0.2.img')
 print('Read requests issued:  '+str(rd_req))
 print('Bytes read:            '+str(rd_bytes))
 print('Write requests issued: '+str(wr_req))

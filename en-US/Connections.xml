@@ -164,12 +164,16 @@ auth_tcp = "sasl"</screen>
             </para>
             <para>
                 Connections are reference counted; the count is explicitly
-                increased by the initial open (<literal>virConnectOpen</literal>, <literal>virConnectOpenAuth</literal>,
-                and the like) as well as <literal>virConnectRef</literal>; it is also temporarily
-                increased by other API that depend on the connection remaining
-                alive.  The open and every <literal>virConnectRef</literal> call should have a
-                matching <literal>virConnectClose</literal>, and all other references will be released
+                increased by the initial (<literal>open</literal>, <literal>openAuth</literal>,
+                and the like); it is also temporarily
+                increased by other methods that depend on the connection remaining
+                alive.  The <literal>open</literal> function call should have a
+                matching <literal>close</literal>, and all other references will be released
                 after the corresponding operation completes.
+            </para>
+            <para>
+                In Python reference counts can be automatically decreased when an class instace 
+                goes out of scope or when the program ends.
             </para>
             <example id="close-Example">
                 <title>Using close with additional references</title>
@@ -616,7 +620,7 @@ command -p port [-l username] hostname netcat -U socket
                 </tgroup>
             </table>
             <para>
-              The following example shows how to local to a QEMU hypervisor using a remote URI.
+              The following example shows how to connect to a QEMU hypervisor using a remote URI.
             </para>
             <example id="Example-Connect_Remote">
                 <title>Connecting to a remote QEMU hypervisor</title>
@@ -630,6 +634,9 @@ command -p port [-l username] hostname netcat -U socket
         <indexterm><primary>Capability information, Connection</primary></indexterm>
         <indexterm><primary>Connections</primary>
         <secondary>Capability information</secondary></indexterm>
+        <indexterm><primary>getCapabilities, Connection</primary></indexterm>
+        <indexterm><primary>Connections</primary>
+        <secondary>getCapabilities</secondary></indexterm>
         <para>
             The <literal>getCapabilities</literal> method call can be used to obtain
             information about the capabilities of the virtualization host.  If
@@ -918,9 +925,9 @@ command -p port [-l username] hostname netcat -U socket
 
         <section>
             <title>getHostname</title>
-            <indexterm><primary>getHost, Connection</primary></indexterm>
-            <indexterm><primary>Connections</primary>
-            <secondary>getHost</secondary></indexterm>
+        <indexterm><primary>getHostName, Connection</primary></indexterm>
+        <indexterm><primary>Connections</primary>
+        <secondary>getHostName</secondary></indexterm>
             <para>
                 The <command>getHostname</command> method can be used to obtain the hostname
                 of the virtualization host as returned by <code>gethostname()</code>.  It invoked via a the
@@ -1242,6 +1249,9 @@ command -p port [-l username] hostname netcat -U socket
             <secondary>compareCPU</secondary></indexterm>
             <para>
                 This method compares the given CPU description with the host CPU.
+            </para>
+            <para>
+                This XML description argument is the same used in the XML description for domain descriptions.
             </para>
             <example id="Example-ConnectCompareCPU">
                 <title>Using compareCPU</title>
