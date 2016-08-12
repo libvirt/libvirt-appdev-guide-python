@@ -159,7 +159,7 @@ auth_tcp = "sasl"</screen>
                 A connection must be released by calling the <literal>close</literal> method
                 of the <literal>virConnection</literal> class when no
                 longer required. Connections are reference counted objects, so there should be a
-                cooresponding call to the <literal>close</literal> method for each
+                corresponding call to the <literal>close</literal> method for each
                 <literal>open</literal> function call.
             </para>
             <para>
@@ -172,7 +172,7 @@ auth_tcp = "sasl"</screen>
                 after the corresponding operation completes.
             </para>
             <para>
-                In Python reference counts can be automatically decreased when an class instace 
+                In Python reference counts can be automatically decreased when an class instance 
                 goes out of scope or when the program ends.
             </para>
             <example id="close-Example">
@@ -379,7 +379,7 @@ driver+unix:///session</screen>
                                   to. This is the same as that used in a local URI. Some
                                   examples are <literal>xen</literal>, <literal>qemu</literal>,
                                   <literal>lxc</literal>, <literal>openvz</literal>, and
-                                  <literal>test</literal>. As a special case, the psuedo
+                                  <literal>test</literal>. As a special case, the pseudo
                                   driver name <literal>remote</literal> can be used, which
                                   will cause the remote daemon to probe for an active
                                   hypervisor and pick one to use. As a general rule if the
@@ -939,7 +939,7 @@ command -p port [-l username] hostname netcat -U socket
                 <command>getHostname</command>:
             </para>
             <example id="Example-ConnectGetHostname">
-                <title>Using virConnectGetHostname</title>
+                <title>Using getHostname</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-9.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
@@ -959,7 +959,7 @@ command -p port [-l username] hostname netcat -U socket
                 <command>getMaxVcpus</command>:
             </para>
             <example id="Example-ConnectGetMaxVcpus">
-                <title>Using virConnectGetMaxVcpus</title>
+                <title>Using getMaxVcpus</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-10.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
@@ -989,7 +989,7 @@ command -p port [-l username] hostname netcat -U socket
                     <tbody>
                         <row>
                             <entry>
-                                <para>listl0]</para>
+                                <para>list[0]</para>
                             </entry>
                             <entry>
                                 <para>
@@ -1095,7 +1095,7 @@ command -p port [-l username] hostname netcat -U socket
                 demonstrates the use of <command>getCellsFreeMemory</command>:
             </para>
             <example id="Example-NodeGetCellsFreeMemory">
-                <title>Using virNodeGetCellsFreeMemory</title>
+                <title>Using getCellsFreeMemory</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-13.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>

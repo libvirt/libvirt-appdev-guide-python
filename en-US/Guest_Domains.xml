@@ -149,11 +149,10 @@
             <programlisting language="Python"><xi:include href="extras/Domains-Example-4.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
 
-
+        <indexterm><primary>listDefinedDomains</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>listDefinedDmamins</secondary></indexterm>
         <para>
-            <indexterm><primary>listDefinedDomains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>listDefinedDmamins</secondary></indexterm>
             In addition to the running domains, there may be some persistent
             inactive domain configurations stored on the host. Since an inactive
             domain does not have any ID identifier, the listing of inactive
@@ -167,10 +166,10 @@
             <programlisting language="Python"><xi:include href="extras/Domains-Example-5.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
 
+        <indexterm><primary>listAllDomains</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>listAllDmamins</secondary></indexterm>
         <para>
-            <indexterm><primary>lisAllDomains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>listAllDmamins</secondary></indexterm>
             The methods for listing domains do not directly return the
             <literal>virDomain</literal> objects, since this may
             incur undue performance penalty for applications which wish
@@ -201,12 +200,180 @@
             <member>VIR_CONNECT_LIST_DOMAINS_AUTOSTART</member>
             <member>VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART</member>
             <member>VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT</member>
-            <member>VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHO</member>
+            <member>VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT</member>
         </simplelist>
         <example>
-          <title>Fetching all domain objects</title>
-          <programlisting language="Python"><xi:include href="extras/Domains-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+           <title>Fetching all domain objects</title>
+           <programlisting language="Python"><xi:include href="extras/Domains-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
+    </section>
+
+    <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information">
+        <title>Obtaining State Information About a Domain</title>
+        <indexterm><primary>Information, Domains</primary></indexterm>
+        <indexterm><primary>State Information, Domains</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>Information</secondary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>State Information</secondary></indexterm>
+
+        <para>
+            Once a domain instance has been obtained, it is possible to fetch information about the state of
+            the domain. Information such as the type of OS being hosted, running state, ID, UUID, etc.
+            The following methods will demonstrate how to fetch this information.
+        </para>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-ID">
+            <title>Fetching the ID of a domain</title>
+            <indexterm><primary>ID, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>ID</secondary></indexterm>
+
+            <para>
+                The ID of a domain can be obtained by using the <literal>ID</literal> method.
+                Only running domains have an ID, fetching the ID of a non-running domain always
+                returns <code>-1</code>.
+            </para>
+
+            <example>
+              <title>Fetching the ID of a domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-43.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-UUID">
+            <title>Fetching the UUID of a domain</title>
+            <indexterm><primary>UUID, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>UUID</secondary></indexterm>
+            <indexterm><primary>UUIDString, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>UUIDString</secondary></indexterm>
+
+            <para>
+                The UUID of a domain can be obtained by using the <literal>UUID</literal>
+                or the <literal>UUIDString</literal> methods. The <literal>UUID</literal> method
+                is not all that useful for Python programs because it is a binary value. The
+                <literal>UUIDString</literal> method is much more useful because it returns a formatted
+                string value that can be easily parsed.
+            </para>
+            <para>
+                The UUID is not dependant on the running state of the domain and always returns
+                a valid UUID.
+            </para>
+
+            <example>
+              <title>Fetching the UUID of a domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-44.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-OSType">
+            <title>Fetching the OS type of a domain</title>
+            <indexterm><primary>OSType, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>OSType</secondary></indexterm>
+
+            <para>
+                The type of OS hosted by a domain is also available.
+                Only running domains have an ID, fetching the ID of a non-running domain always
+                returns <code>-1</code>.
+            </para>
+
+            <example>
+              <title>Fetching the ID of a domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-45.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-Autostart">
+            <title>Fetching the autostart flag for the domain</title>
+            <indexterm><primary>autostart, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>autostart</secondary></indexterm>
+
+            <para>
+                The current state of the autostart flag my be fetched via the <literal>autostart</literal>
+                method. This method always returns a valid value and is not dependent on the running
+                state of the domain.
+            </para>
+
+            <example>
+              <title>Fetching the autostart flag for a domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-46.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-HasCurrentSnapshot">
+            <title>Determining if the domain has a current snapshot</title>
+            <indexterm><primary>hasSnapshot, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>hasSnapshot</secondary></indexterm>
+
+            <para>
+                The <literal>hasCurrentSnapshot</literal> method returns a boolean value indicating if a current
+                snapshot is available. This method always returns a valid value and is not dependent on the running
+                state of the domain.
+            </para>
+
+            <example>
+              <title>Determining if the domain has a current snapshot</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-47.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-HasManagedSaveImages">
+            <title>Determining if the domain has managed save images</title>
+            <indexterm><primary>hasManagedSaveImages, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>hasManagedSaveImages</secondary></indexterm>
+
+            <para>
+                The <literal>hasManagedSaveImages</literal> method returns a boolean value indicating if a domain
+                a managed save image. Note that a running domain should never have a saved image because that
+                image should have been removed when the domain was restarted.
+            </para>
+
+            <example>
+              <title>Determining if the domain has a managed save images</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-48.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-Hostname">
+            <title>Fetch the hostname of the domain</title>
+            <indexterm><primary>hostname, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>hostname</secondary></indexterm>
+
+            <para>
+                The <literal>hostname</literal> method returns the hostname of the domain.
+                a managed save image. Note that a running domain should never have a saved image because that
+                image should have been removed when the domain was restarted.
+            </para>
+            <para>
+                The <literal>hostname</literal> method is highly dependent on the hypervisor and/or the 
+                qemu-guest-agent. It may throw an error if the method can not complete successfully.
+            </para>
+
+            <example>
+              <title>Fetch the hostname of the domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-49.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle_Control">
@@ -758,12 +925,12 @@
             </example>
 
             <note>
-                <title>Restoring a guest domain does not update the domain's current dat/time</title>
+                <title>Restoring a guest domain does not update the domain's current date/time</title>
                 <para>
-                    When a guest domain is retored it is returned to the state when it was saved. This will
+                    When a guest domain is restored it is returned to the state when it was saved. This will
                     include the date and time when the domain was saved. The guest domain usually will not
                     be able to determine that a time period has passed since it was saved. This means the
-                    current time will not be automatically updated either during or after the the restore
+                    current time will not be automatically updated either during or after the restore
                     operation.
                 </para>
             </note>

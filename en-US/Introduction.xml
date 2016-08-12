@@ -51,6 +51,15 @@
             this should only be done using secure protocols.
         </para>
 
+        <para>
+            This guide is not intended to be a full reference to the entire Python libvirt
+            interface. The list of functions, classes, and methods covered in this guide
+            is only partial and nowhere near complete. The complete reference can always be found
+            on any host where the libvirt-python module has been installed (most hosts).
+            It is available by running the command <code>pydoc libvirt</code> from any
+            command line terminal.
+        </para>
+
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Introduction-Glossary">
