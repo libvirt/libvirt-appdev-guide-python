@@ -513,7 +513,7 @@
             <secondary>getTime</secondary></indexterm>
 
             <para>
-                The <literal>getTime</literal> method extracts the current time from the domain.
+                The <literal>getTime</literal> method extracts the current timestamp from the domain.
                 The method returns the same value as the Python <literal>time.struct_time</literal> function.
             </para>
 
@@ -522,19 +522,6 @@
               <programlisting language="Python"><xi:include href="extras/Domains-Example-57.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle_Control">

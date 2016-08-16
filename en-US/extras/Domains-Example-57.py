@@ -17,7 +17,6 @@ if dom == None:
     exit(1)
 
 struct = dom.getTime()
-print(struct)
 timestamp = time.ctime(float(struct['seconds']))
 print('The domain current time is ' + timestamp)
 
