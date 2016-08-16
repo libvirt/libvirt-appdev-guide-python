@@ -1,6 +1,6 @@
-# Example-49.py
+# Example-57.py
 from __future__ import print_function
-import sys
+import sys, time
 import libvirt
 from xml.dom import minidom
 
@@ -16,8 +16,10 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-name = dom.hostname()
-print('The hostname of the domain  is ' + str(name))
+struct = dom.getTime()
+print(struct)
+timestamp = time.ctime(float(struct['seconds']))
+print('The domain current time is ' + timestamp)
 
 conn.close()
 exit(0)

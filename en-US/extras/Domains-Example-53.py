@@ -1,4 +1,4 @@
-# Example-49.py
+# Example-53.py
 from __future__ import print_function
 import sys
 import libvirt
@@ -16,8 +16,11 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-name = dom.hostname()
-print('The hostname of the domain  is ' + str(name))
+mem = dom.maxMemory()
+if mem > 0:
+    print('The max memory for domain is ' + str(mem) + 'MB')
+else:
+    print('There was an error.')
 
 conn.close()
 exit(0)

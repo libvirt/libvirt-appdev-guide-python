@@ -1,4 +1,4 @@
-# Example-49.py
+# Example-52.py
 from __future__ import print_function
 import sys
 import libvirt
@@ -16,8 +16,13 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-name = dom.hostname()
-print('The hostname of the domain  is ' + str(name))
+flag = dom.isPersistent()
+if flag == 1:
+    print('The domain is persistent.')
+elif flag == 0:
+    print('The domain is not persistent.')
+else:
+    print('There was an error.')
 
 conn.close()
 exit(0)

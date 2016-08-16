@@ -1,4 +1,4 @@
-# Example-49.py
+# Example-55.py
 from __future__ import print_function
 import sys
 import libvirt
@@ -16,8 +16,8 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-name = dom.hostname()
-print('The hostname of the domain  is ' + str(name))
+name = dom.name()
+print('Thename of the domain is "' + name +'".')
 
 conn.close()
 exit(0)

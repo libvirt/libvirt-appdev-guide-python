@@ -278,6 +278,10 @@
                 The type of OS hosted by a domain is also available.
                 Only running domains have an ID, fetching the ID of a non-running domain always
                 returns <code>-1</code>.
+                This same information may be retrieved via the
+                <link linkend="libvirt_application_development_guide_using_python-Guest_Domains-Information-Info">
+                    info
+                </link> method.
             </para>
 
             <example>
@@ -348,8 +352,6 @@
 
             <para>
                 The <literal>hostname</literal> method returns the hostname of the domain.
-                a managed save image. Note that a running domain should never have a saved image because that
-                image should have been removed when the domain was restarted.
             </para>
             <para>
                 The <literal>hostname</literal> method is highly dependent on the hypervisor and/or the 
@@ -359,6 +361,165 @@
             <example>
               <title>Fetch the hostname of the domain</title>
               <programlisting language="Python"><xi:include href="extras/Domains-Example-49.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-Info">
+            <title>Get the Domain hardware info</title>
+            <indexterm><primary>info, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>info</secondary></indexterm>
+
+            <para>
+                The <literal>info</literal> method returns some general information about the domain hardware.
+                a managed save image. Ther should be eight entries returned in a Python list which consist of
+                the state, maxmemory, memory, cpus and cpu time for the domain.
+            </para>
+
+            <example>
+              <title>Get the domain info</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-50.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-IsActive">
+            <title>Determine if the Domain is running</title>
+            <indexterm><primary>isActive, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>isActive</secondary></indexterm>
+
+            <para>
+                The <literal>isActive</literal> method returns a boolean flag indicating whether or not
+                the domain is active (running).
+            </para>
+
+            <example>
+              <title>Determine if the Domain is running</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-51.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-IsPersistent">
+            <title>Determine if the Domain is persistent</title>
+            <indexterm><primary>isPersistent, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>isPersistent</secondary></indexterm>
+
+            <para>
+                The <literal>isPersistent</literal> method returns a boolean flag indicating whether or not
+                the domain is persistent (the domain will be persistent after a reboot).
+            </para>
+
+            <example>
+              <title>Determine if the Domain is persistent</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-52.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-IsUpdated">
+            <title>Determine if the Domain is updated</title>
+            <indexterm><primary>isUpdated, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>isUpdated</secondary></indexterm>
+
+            <para>
+                The <literal>isUpdated</literal> method returns a boolean flag indicating whether or not
+                the domain has been updated since it was created.
+            </para>
+
+            <example>
+              <title>Determine if the Domain is updated</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-52.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-MaxMemory">
+            <title>Determine the max memory of the Domain</title>
+            <indexterm><primary>maxMemory, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>maxMemory</secondary></indexterm>
+
+            <para>
+                The <literal>maxMemory</literal> method returns the maximum memory allocated to the domain,
+                This same information may be retrieved via the
+                <link linkend="libvirt_application_development_guide_using_python-Guest_Domains-Information-Info">
+                    info
+                </link> method.
+            </para>
+
+            <example>
+              <title>Determine the max memory of the Domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-53.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-MaxVcpus">
+            <title>Determine the max Vcpus of the Domain</title>
+            <indexterm><primary>maxVCPUs, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>maxVcpus</secondary></indexterm>
+
+            <para>
+                The <literal>maxVcpus</literal> method returns the maximum number of virtual CPUs
+                allocated to the domain,
+                This same information can be retrieved via
+                <link linkend="libvirt_application_development_guide_using_python-Guest_Domains-Information-Info">
+                    info
+                </link> method.
+            </para>
+
+            <example>
+              <title>Determine the max Vcpus of the Domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-54.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-Name">
+            <title>Fetch the name of the Domain</title>
+            <indexterm><primary>name, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>name</secondary></indexterm>
+
+            <para>
+                The <literal>name</literal> method returns the name of the domain.
+            </para>
+
+            <example>
+              <title>Fetch the name of the Domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-55.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-State">
+            <title>Fetch the state of the Domain</title>
+            <indexterm><primary>state, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>state</secondary></indexterm>
+
+            <para>
+                The <literal>state</literal> method returns the state of the domain.
+            </para>
+
+            <example>
+              <title>Fetch the state of the Domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-56.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </section>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-GetTime">
+            <title>Extract the time information from Domain</title>
+            <indexterm><primary>getTime, Domains</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>getTime</secondary></indexterm>
+
+            <para>
+                The <literal>getTime</literal> method extracts the current time from the domain.
+                The method returns the same value as the Python <literal>time.struct_time</literal> function.
+            </para>
+
+            <example>
+              <title>Fetch the state of the Domain</title>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-57.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
 
