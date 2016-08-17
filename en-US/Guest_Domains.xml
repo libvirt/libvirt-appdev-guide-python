@@ -682,7 +682,7 @@
                     </para>
 
                     <para>
-                        Currently the <literal>defineGuestDomain</literal> method defines a flags
+                        Currently the <literal>defineDomain</literal> method defines a flags
                         parameter that is unused. A value of <literal>0</literal> should always be supplied
                         for that parameter. This may be changed in later versions of the method.
                     </para>
@@ -799,6 +799,12 @@
                         primary boot device. Once that completed, then
                         a persistent configuration for the guest would be
                         defined to boot off the hard disk.
+                    </para>
+
+                    <indexterm><primary>defineXMLFlags</primary></indexterm>
+                    <para>
+                        In addition to the <literal>defineXML</literal> method, the alternative method 
+                        <literal>defineXMLFlags</literal> is available.
                     </para>
 
                 </section>
@@ -976,8 +982,7 @@
             <secondary>destroy</secondary></indexterm>
             <para>
                 Stopping refers to the process of halting a running guest. A guest can be stopped by two methods:
-                shutdown and destroy.
-            </para>
+                shutdown and destroy.            </para>
             <para>
                 The <literal>shutdown</literal> method is a clean stop process, which sends a signal to the guest domain operating system
                 asking it to shut down immediately. The guest will only be stopped once the operating system
@@ -1083,6 +1088,12 @@
                 </para>
             </note>
 
+            <indexterm><primary>restoreFlags</primary></indexterm>
+            <para>
+                In addition to the <literal>restore</literal> method, the alternative method 
+                <literal>restoreFlags</literal> is available.
+            </para>
+
         </section>
 
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Migration">
@@ -1178,6 +1189,15 @@
                 <title>Migrate a Domain to an Open Connection</title>
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-24.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
+
+            <indexterm><primary>migrate2</primary></indexterm>
+            <indexterm><primary>migrate3</primary></indexterm>
+            <indexterm><primary>migrateToURI</primary></indexterm>
+            <para>
+                In addition to the <literal>migrate</literal> method, there are alternative the methods 
+                <literal>migrate2</literal>, <literal>migrate3</literal>and <literal>migrateToURI</literal>
+                for migration over other types of connections.
+            </para>
         </section>
 
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Lifecycle-Autostart">
@@ -1274,6 +1294,13 @@
                 <title>Set the amount of memory for a domain</title>
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-30.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
+
+            <indexterm><primary>setMemoryFlags</primary></indexterm>
+            <para>
+                In addition to the <literal>setMemory</literal> method, the alternative method
+                <literal>setMemoryFlags</literal> is also available.
+            </para>
+
         </section>
 
     </section>
@@ -1306,6 +1333,12 @@
                 transferred. A block device is specified by the image
                 file path or the device bus name set by the devices/disk/target[@dev] 
                 element in the domain XML.
+            </para>
+
+            <indexterm><primary>blockStats</primary></indexterm>
+            <para>
+                In addition to the <literal>blockStats</literal> method, the alternative method
+                <literal>blockStatsFlags</literal> is also available.
             </para>
 
         </section>
