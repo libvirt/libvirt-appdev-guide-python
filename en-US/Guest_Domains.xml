@@ -290,24 +290,6 @@
             </example>
         </section>
 
-        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-Autostart">
-            <title>Fetching the autostart flag for the domain</title>
-            <indexterm><primary>autostart, Domains</primary></indexterm>
-            <indexterm><primary>Domains</primary>
-            <secondary>autostart</secondary></indexterm>
-
-            <para>
-                The current state of the autostart flag my be fetched via the <literal>autostart</literal>
-                method. This method always returns a valid value and is not dependent on the running
-                state of the domain.
-            </para>
-
-            <example>
-              <title>Fetching the autostart flag for a domain</title>
-              <programlisting language="Python"><xi:include href="extras/Domains-Example-46.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-            </example>
-        </section>
-
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Information-HasCurrentSnapshot">
             <title>Determining if the domain has a current snapshot</title>
             <indexterm><primary>hasSnapshot, Domains</primary></indexterm>
@@ -966,6 +948,12 @@
                         <programlisting language="Python"><xi:include href="extras/Domains-Example-19.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
                     </example>
 
+                    <indexterm><primary>createXMLFlags</primary></indexterm>
+                    <para>
+                        In addition to the <literal>createXML</literal> method, the alternative method 
+                        <literal>createXMLFlags</literal> is available.
+                    </para>
+
                 </section>
             </section>
         </section>
@@ -991,7 +979,8 @@
                 on what the guest OS supports, can shutdown the domain and leave the object in a usable state.
             </para>
             <para>
-                The <literal>destroy</literal> method immediately terminates the guest domain. The destroy process is analogous to pulling
+                The <literal>destroy</literal> and the <literal>destroyFlags</literal> method immediately
+                terminate the guest domain. The destroy process is analogous to pulling
                 the plug on a physical machine.
             </para>
         </section>
@@ -1015,13 +1004,11 @@
                 to its original running state, continuingly execution where it left off. Suspend does not
                 save a persistent image of the guest's memory. For this, <literal>save</literal> is used.
             </para>
+
+            <indexterm><primary>save</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>save</secondary></indexterm>
             <para>
-                <indexterm><primary>save</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>save</secondary></indexterm>
-                <indexterm><primary>restore</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>restore</secondary></indexterm>
                 The <literal>save</literal> and <literal>restore</literal> methods refer to the process of taking a running guest
                 and saving its memory state to a file. At some time later, it
                 is possible to restore the guest to its original running state,
@@ -1072,6 +1059,28 @@
                 was when the save image was created
             </para>
 
+            <indexterm><primary>saveFlags</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>saveFlags</secondary></indexterm>
+            <para>
+                In addition, the <literal>saveFlags</literal> methods allows the domain to be save
+                and at the same alter the configuration of the saved image. When the domain is
+                restored the new configuration will be allpied to the running domain.
+            </para>
+
+            <indexterm><primary>managedSave</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>managedSave</secondary></indexterm>
+            <para>
+                There is also another way to save a domain. The <literal>managedSave</literal>
+                method can also save a running domain state, only in this case The system selects
+                the location for the saved image. In addition, the domain will be restored to the
+                save state when the domain is restarted.
+            </para>
+
+            <indexterm><primary>restore</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>restore</secondary></indexterm>
             <example>
                 <title>Restoring a Guest Domain</title>
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-21.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
@@ -1105,6 +1114,12 @@
             <indexterm><primary>migrateToURI</primary></indexterm>
             <indexterm><primary>Domains</primary>
             <secondary>migrateToURI</secondary></indexterm>
+            <indexterm><primary>migrateToURI2</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>migrateToURI2</secondary></indexterm>
+            <indexterm><primary>migrateToURI3</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>migrateToURI3</secondary></indexterm>
 
             <para>
                 Migration is the process of taking the image of a guest domain and moving it somewhere,
@@ -1193,9 +1208,12 @@
             <indexterm><primary>migrate2</primary></indexterm>
             <indexterm><primary>migrate3</primary></indexterm>
             <indexterm><primary>migrateToURI</primary></indexterm>
+            <indexterm><primary>migrateToURI2</primary></indexterm>
+            <indexterm><primary>migrateToURI3</primary></indexterm>
             <para>
-                In addition to the <literal>migrate</literal> method, there are alternative the methods 
-                <literal>migrate2</literal>, <literal>migrate3</literal>and <literal>migrateToURI</literal>
+                In addition to the <literal>migrate</literal> method, there are the alternative methods 
+                <literal>migrate2</literal>, <literal>migrate3</literal>, <literal>migrateToURI</literal>,
+                <literal>migrateToURI2</literal>, and <literal>migrateToURI3</literal>
                 for migration over other types of connections.
             </para>
         </section>
