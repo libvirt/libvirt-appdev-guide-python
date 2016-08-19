@@ -55,7 +55,8 @@
         of a virtual machine's lifecycle as well as the configuration of the resources required by the VM. These
         operations can be performed on a remote host entirely within the Python libvirt module. In other words, a
         management application using libvirt can enable a user to perform all the required tasks for configuring
-        the host for a VM: allocating resources, running the VM, shutting it down and deallocating the resources, without requiring shell access or any other control channel.
+        the host for a VM: allocating resources, running the VM, shutting it down and deallocating the resources,
+        without requiring shell access or any other control channel.
     </para>
     <para>
         Libvirt supports the following storage pool types:

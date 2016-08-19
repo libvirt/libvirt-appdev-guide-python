@@ -32,6 +32,9 @@
             Each host interface is represented by an instance of the <literal>virInterface</literal> class
             and each of these has a single unique identifier:
         </para>
+        <indexterm><primary>name, Interfaces</primary></indexterm>
+        <indexterm><primary>Interfaces</primary>
+        <secondary>name</secondary></indexterm>
         <para>
             The <literal>name</literal> method returns a string unique among all interfaces (active or inactive) on a
             host. This is the same string used by the operating system to identify
@@ -53,6 +56,9 @@
             persistent configuration data (usually contained in files somewhere
             under <filename>/etc</filename>), and not the interface itself.
         </para>
+        <indexterm><primary>interfaceDefineXML, Interfaces</primary></indexterm>
+        <indexterm><primary>Interfaces</primary>
+        <secondary>interfaceDefineXML</secondary></indexterm>
         <para>
             When a new interface is defined (using the <literal>interfaceDefineXML</literal> method), or the
             configuration of an existing interface is changed (again, with
@@ -136,6 +142,12 @@
       <section id="libvirt_application_development_guide_using_python-Network_Interfaces-Information-Fetching">
           <title>Obtaining a virInterface instance for an Interface</title>
 
+          <indexterm><primary>interfaceLookupByName</primary></indexterm>
+          <indexterm><primary>Interfaces</primary>
+          <secondary>interfaceLookupByName</secondary></indexterm>
+          <indexterm><primary>interfaceLookupByMACString</primary></indexterm>
+          <indexterm><primary>Interfaces</primary>
+          <secondary>interfaceLookupByMACString</secondary></indexterm>
           <para>
               Many operations require that you have an instance of <literal>virInterface</literal>, but you may
               only have the name or MAC address of the interface. You can use
@@ -163,6 +175,15 @@
       <section id="libvirt_application_development_guide_using_python-Network_Interfaces-Information-Detail">
           <title>Retrieving Detailed Interface Information</title>
 
+          <indexterm><primary>name, Interfaces</primary></indexterm>
+          <indexterm><primary>Interfaces</primary>
+          <secondary>name</secondary></indexterm>
+          <indexterm><primary>MACString, Interfaces</primary></indexterm>
+          <indexterm><primary>Interfaces</primary>
+          <secondary>MACString</secondary></indexterm>
+          <indexterm><primary>XMLDesc, Interfaces</primary></indexterm>
+          <indexterm><primary>Interfaces</primary>
+          <secondary>XMLDesc</secondary></indexterm>
           <para>
               You may also find yourself with a <literal>virInterface</literal> instance, and need the name
               or MAC address of the interface, or want to examine the full interface
@@ -263,7 +284,7 @@
 
         <section>
             <title>changeRollback</title>
-            <indexterm><primary>changeRollback, Connection</primary></indexterm>
+            <indexterm><primary>changeRollback, Interfaces</primary></indexterm>
             <indexterm><primary>Interfaces</primary>
             <secondary>changeRollback</secondary></indexterm>
             <para>
@@ -281,7 +302,7 @@
 
         <section>
             <title>changeBegin</title>
-            <indexterm><primary>changeBegin, Connection</primary></indexterm>
+            <indexterm><primary>changeBegin, Interfaces</primary></indexterm>
             <indexterm><primary>Interfaces</primary>
             <secondary>changeBegin</secondary></indexterm>
             <para>
@@ -302,7 +323,7 @@
 
         <section>
             <title>changeCommit</title>
-            <indexterm><primary>changeCommit, Connection</primary></indexterm>
+            <indexterm><primary>changeCommit, Interfaces</primary></indexterm>
             <indexterm><primary>Interfaces</primary>
             <secondary>changeCommit</secondary></indexterm>
             <para>
@@ -313,7 +334,16 @@
                 <title>Using changeCommit</title>
                 <programlisting language="Python"><xi:include href="extras/Networkinterface-Example-17.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
+
+            <indexterm><primary>changeRollback, Interfaces</primary></indexterm>
+            <indexterm><primary>Interfaces</primary>
+            <secondary>changeRollback</secondary></indexterm>
+            <para>
+                The <literal>changeRollback</literal> method can be used to roll back an uncommited change.
+            </para>
+
         </section>
+
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Network_Interfaces-Lifecycle">

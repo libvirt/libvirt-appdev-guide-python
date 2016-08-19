@@ -12,6 +12,7 @@
         returned an error.  An important thing to note about Python libvirt error
         reporting is that errors are stored on a per thread basis and not per connection.
     </para>
+    <indexterm><primary>libvirtError class</primary></indexterm>
     <para>
         The libvirt Python module defines a standard exception class <literal>libvirtError</literal>
         that can be subclassed to add additional functionality when raising a libvirt exception.
@@ -24,10 +25,13 @@
     <para>
         There are a few things to note about this definition. The first is that you can instantiate this class
         by using the Python <literal>raise</literal> statement. Actually this is not of much use unless
-        you subclass the <literal>virError</literal> class with your own class which would contain
+        you subclass the <literal>libvirtError</literal> class with your own class which would contain
         the needed behaviour. You should also make note of the methods which can obtain the error
         information. A description of these methods follows:
     </para>
+    <indexterm><primary>get_error_code</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_code</secondary></indexterm>
     <para>
         The method <literal>get_error_code</literal> returns the error code that was
         returned from the error. This is one of the data definition from the Python libvirt module.
@@ -35,6 +39,9 @@
         libvirt module.
     </para>
     <programlisting language="Python"><xi:include href="extras/ErrorHandling-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    <indexterm><primary>get_error_domain</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_domain</secondary></indexterm>
     <para>
         The method <literal>get_error_domain</literal> is named that for legacy
         reasons, but really represents which part of libvirt generated the
@@ -43,6 +50,9 @@
         libvirt module. The full list is:
     </para>
     <programlisting language="Python"><xi:include href="extras/ErrorHandling-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    <indexterm><primary>get_error_message</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_message</secondary></indexterm>
     <para>
         The method <literal>get_error_message</literal> is a human-readable string
         describing the error.
@@ -53,22 +63,37 @@
         The full list of levels is:
     </para>
     <programlisting language="Python"><xi:include href="extras/ErrorHandling-Example-4.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    <indexterm><primary>get_error_str1</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_str1</secondary></indexterm>
     <para>
         The method <literal>get_error_str1</literal> gives extra human readable
         information.
     </para>
+    <indexterm><primary>get_error_str2</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_str2</secondary></indexterm>
     <para>
         The method <literal>get_error_str2</literal> gives extra human readable
         information.
     </para>
+    <indexterm><primary>get_error_str3</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_str3</secondary></indexterm>
     <para>
         The method <literal>get_error_str3</literal> gives extra human readable
         information.
     </para>
+    <indexterm><primary>get_error_int1</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_int1</secondary></indexterm>
     <para>
         The method <literal>get_error_int1</literal> gives extra numeric information that
         may be useful for further classifying the error.
     </para>
+    <indexterm><primary>get_error_int2</primary></indexterm>
+    <indexterm><primary>libvirtError class</primary>
+    <secondary>get_error_int2</secondary></indexterm>
     <para>
         The method <literal>get_error_int2</literal> gives extra numeric information that
         may be useful for further classifying the error.
@@ -99,18 +124,18 @@
         </example>
     </section>
 
-    <section id="libvirt_application_development_guide_using_python-Error_Handling-Subclassing_virError">
-        <title>Subclassing virError</title>
-        <indexterm><primary>virError class</primary></indexterm>
+    <section id="libvirt_application_development_guide_using_python-Error_Handling-Subclassing_libvirtError">
+        <title>Subclassing libvirtError</title>
+        <indexterm><primary>libvirtError class</primary></indexterm>
         <para>
-            It is possible to subclass the <literal>virtError</literal> class to add functionality.
-            The default <literal>virError</literal> does not provide any ability to either save the error
-            information or present the information to the user. Subclassing <literal>virError</literal>
+            It is possible to subclass the <literal>libvirtError</literal> class to add functionality.
+            The default <literal>libvirtError</literal> does not provide any ability to either save the error
+            information or present the information to the user. Subclassing <literal>libvirtError</literal>
             allows the programer the flexibility to add any functionality needed.
             An example of this follows:
         </para>
         <example>
-            <title>Subclassing virError</title>
+            <title>Subclassing libvirtError</title>
             <programlisting language="Python"><xi:include href="extras/Error-Example-25.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
     </section>
@@ -133,8 +158,8 @@
             An example of this function follows:
         </para>
         <example>
-            <title>Subclassing virError</title>
-            <indexterm><primary>subclassing the virError class</primary></indexterm>
+            <title>Subclassing libvirtError</title>
+            <indexterm><primary>subclassing the libvirtError class</primary></indexterm>
             <programlisting language="Python"><xi:include href="extras/Error-Example-26.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
     </section>
