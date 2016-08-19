@@ -168,7 +168,7 @@
 
         <indexterm><primary>listAllDomains</primary></indexterm>
         <indexterm><primary>Domains</primary>
-        <secondary>listAllDmamins</secondary></indexterm>
+        <secondary>listAllDomains</secondary></indexterm>
         <para>
             The methods for listing domains do not directly return the
             <literal>virDomain</literal> objects, since this may
@@ -354,7 +354,7 @@
 
             <para>
                 The <literal>info</literal> method returns some general information about the domain hardware.
-                a managed save image. Ther should be eight entries returned in a Python list which consist of
+                a managed save image. There should be eight entries returned in a Python list which consist of
                 the state, maxmemory, memory, cpus and cpu time for the domain.
             </para>
 
@@ -1065,7 +1065,7 @@
             <para>
                 In addition, the <literal>saveFlags</literal> methods allows the domain to be save
                 and at the same alter the configuration of the saved image. When the domain is
-                restored the new configuration will be allpied to the running domain.
+                restored the new configuration will be applied to the running domain.
             </para>
 
             <indexterm><primary>managedSave</primary></indexterm>

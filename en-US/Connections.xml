@@ -1266,7 +1266,7 @@ command -p port [-l username] hostname netcat -U socket
             <secondary>getFreeMemory</secondary></indexterm>
             <para>
                 This method compares the given CPU description with the host CPU.
-                Note: most libvirt APIs provide memory sizes in kibibytes, but in this function the returned
+                Note: most libvirt APIs provide memory sizes in kilobytes, but in this function the returned
                 value is in bytes. Divide by 1024 as necessary.
             </para>
             <example id="Example-ConnectGetFreeMemory">
@@ -1283,7 +1283,7 @@ command -p port [-l username] hostname netcat -U socket
             <para>
                 This method queries the host system for free pages of specified size. For the input, the
                 <literal>pages</literal> argument is a Python list of page sizes that caller is
-                interested in (the size unit is kibibytes, so e.g. pass 2048 for 2MB), then
+                interested in (the size unit is kilobytes, so e.g. pass 2048 for 2MB), then
                 the <literal>start</literal> argument
                 refers to the first NUMA node that info should be collected from, and
                 <literal>cellcount</literal> argument tells how many consecutive nodes should be queried.
