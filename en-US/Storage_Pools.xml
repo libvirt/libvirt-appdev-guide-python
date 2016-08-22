@@ -5,7 +5,7 @@
 ]>
 <chapter id="libvirt_application_development_guide_using_python-Storage_Pools">
     <title>Storage Pools</title>
-    <indexterm><primary>storage pools</primary></indexterm>
+    <indexterm><primary>Storage Pools</primary></indexterm>
     <para>
         Libvirt provides storage management on the physical host through storage pools and volumes.
     </para>

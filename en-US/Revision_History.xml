@@ -8,6 +8,20 @@
   <simpara>
     <revhistory>
       <revision>
+        <revnumber>1.1-1</revnumber>
+        <date>Mon Aug 22 2016</date>
+        <author>
+          <firstname>W. David</firstname>
+          <surname>Ashley</surname>
+          <email>w.david.ashley@gmail.com</email>
+        </author>
+        <revdescription>
+          <simplelist>
+            <member>V1.1 release to the libvirt Development Project.</member>
+          </simplelist>
+        </revdescription>
+      </revision>
+      <revision>
         <revnumber>1.0-1</revnumber>
         <date>Sat Aug 29 2015</date>
         <author>
