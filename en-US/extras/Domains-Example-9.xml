@@ -3,7 +3,7 @@
   <uuid>c7a5fdbd-cdaf-9455-926a-d65c16db1809</uuid>
   <memory>500000</memory>
   <vcpu>1</vcpu>
-  .... the <os> block will vary per approach ...
+  <os>.... this block will vary per approach ....</os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

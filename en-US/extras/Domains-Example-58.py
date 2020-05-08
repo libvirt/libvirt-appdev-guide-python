@@ -1,6 +1,6 @@
-# Example-57.py
+# Example-58.py
 from __future__ import print_function
-import sys, time
+import sys
 import libvirt
 from xml.dom import minidom
 
@@ -16,13 +16,13 @@ if dom == None:
     print('Failed to find the domain '+domName, file=sys.stderr)
     exit(1)
 
-# Ensure the domain is running first:
-if dom.state() == libvirt.VIR_DOMAIN_RUNNING:
-    struct = dom.getTime()
-    timestamp = time.ctime(float(struct['seconds']))
-    print('The domain current time is ' + timestamp)
+flag = dom.isUpdated()
+if flag == 1:
+    print('The domain is updated.')
+elif flag == 0:
+    print('The domain is not updated.')
 else:
-    print('The domain is not running, cannot get time information!')
+    print('There was an error.')
 
 conn.close()
 exit(0)

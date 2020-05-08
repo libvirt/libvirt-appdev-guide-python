@@ -1,3 +1,4 @@
+<domain>
  ...
   <os>
     <type>hvm</type>
@@ -10,3 +11,4 @@
     <bios useserial='yes' rebootTimeout='0'/>
   </os>
   ...
+</domain>

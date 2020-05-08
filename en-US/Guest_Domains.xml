@@ -411,7 +411,7 @@
 
             <example>
               <title>Determine if the Domain is updated</title>
-              <programlisting language="Python"><xi:include href="extras/Domains-Example-52.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+              <programlisting language="Python"><xi:include href="extras/Domains-Example-58.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
 
@@ -1073,7 +1073,7 @@
             <secondary>managedSave</secondary></indexterm>
             <para>
                 There is also another way to save a domain. The <literal>managedSave</literal>
-                method can also save a running domain state, only in this case The system selects
+                method can also save a running domain state, only in this case the system selects
                 the location for the saved image. In addition, the domain will be restored to the
                 save state when the domain is restarted.
             </para>
@@ -1252,6 +1252,56 @@
             This can be accessed locally in <filename>/usr/share/doc/libvirt-devel-version/</filename>
             if your system has the <package>libvirt-devel</package> package installed.
         </para>
+
+
+        <para>
+            Configuration information for a guest domain can be obtained by using the <literal>XMLDesc</literal>
+            method. This method returns the current description of a domain as an XML data stream.
+            This stream can then be parsed to obtain detailed information about the domain and all the
+            parts that make up the domain.
+        </para>
+        <para>
+            The flags parameter may contain any number of the following constants:
+        </para>
+        <simplelist>
+            <member>VIR_DOMAIN_XML_SECURE</member>
+            <member>VIR_DOMAIN_XML_INACTIVE</member>
+            <member>VIR_DOMAIN_XML_UPDATE_CPU</member>
+            <member>VIR_DOMAIN_XML_MIGRATABLE</member>
+        </simplelist>
+        <para>
+            The following example shows how to obtain some basic information about the domain.
+        </para>
+        <indexterm><primary>XMLDesc</primary></indexterm>
+        <indexterm><primary>Domains</primary>
+        <secondary>XMLDesc</secondary></indexterm>
+        <example>
+            <title>Get basic domain information from the domain's XML description</title>
+            <programlisting language="Python"><xi:include href="extras/Domains-Example-36.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+
+        <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Emulator">
+            <title>Emulator</title>
+            <indexterm><primary>XMLDesc</primary></indexterm>
+            <indexterm><primary>Domains</primary>
+            <secondary>XMLDesc</secondary></indexterm>
+
+            <para>
+                To discover the guest domain's emulator find and display the content of the emulator XML tag.
+            </para>
+            <example>
+                <title>Get domain's emulator information</title>
+                <programlisting language="Python"><xi:include href="extras/Domains-Example-37.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                The XML configuration for the Emulator is typically as follows:
+            </para>
+            <example>
+                <title>Domain Emulator XML information</title>
+                <programlisting language="XML"><xi:include href="extras/Domains-Example-37.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
+        </section>
 
         <section id="libvirt_application_development_guide_using_python-Guest_Domains-Domain_Config-Boot">
             <title>Boot Modes</title>
@@ -1442,56 +1492,6 @@
 
       <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config">
           <title>Device configuration</title>
-
-          <para>
-              Configuration information for a guest domain can be obtained by using the <literal>XMLDesc</literal>
-              method. This method returns the current description of a domain as an XML data stream.
-              This stream can then be parsed to obtain detailed information about the domain and all the
-              parts that make up the domain.
-          </para>
-          <para>
-              The flags parameter may contain any number of the following constants:
-          </para>
-          <simplelist>
-              <member>VIR_DOMAIN_XML_SECURE</member>
-              <member>VIR_DOMAIN_XML_INACTIVE</member>
-              <member>VIR_DOMAIN_XML_UPDATE_CPU</member>
-              <member>VIR_DOMAIN_XML_MIGRATABLE</member>
-          </simplelist>
-          <para>
-              The following example shows how to obtain some basic information about the domain.
-          </para>
-          <indexterm><primary>XMLDesc</primary></indexterm>
-          <indexterm><primary>Domains</primary>
-          <secondary>XMLDesc</secondary></indexterm>
-          <example>
-              <title>Get basic domain information from the domain's XML description</title>
-              <programlisting language="Python"><xi:include href="extras/Domains-Example-36.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-          </example>
-
-          <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Emulator">
-              <title>Emulator</title>
-                <indexterm><primary>XMLDesc</primary></indexterm>
-                <indexterm><primary>Domains</primary>
-                <secondary>XMLDesc</secondary></indexterm>
-
-              <para>
-                  To discover the guest domain's emulator find and display the content of the emulator XML tag.
-              </para>
-              <example>
-                  <title>Get domain's emulator information</title>
-                  <programlisting language="Python"><xi:include href="extras/Domains-Example-37.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-              </example>
-              <para>
-                  The XML configuration for the Emulator is typically as follows:
-              </para>
-              <example>
-                  <title>Domain Emulator XML information</title>
-                  <programlisting language="XML"><xi:include href="extras/Domains-Example-37.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-              </example>
-
-          </section>
-
           <section id="libvirt_application_development_guide_using_python-Guest_Domains-Device_Config-Disks">
               <title>Disks</title>
               <indexterm><primary>Disk configuration</primary></indexterm>
