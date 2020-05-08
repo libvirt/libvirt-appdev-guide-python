@@ -75,6 +75,9 @@
         <listitem><para>Gluster backend</para></listitem>
         <listitem><para>ZFS backend</para></listitem>
     </itemizedlist>
+    <para>
+        The storage pool XML format is specified at https://libvirt.org/formatstorage.html#StoragePool
+    </para>
 
     <section id="libvirt_application_development_guide_using_python-Storage_Pools-Overview">
         <title>Overview</title>
@@ -247,6 +250,9 @@
             Storage volumes are in turn contained in storage pools. A storage pool can contain as many
             storage pools as the underlying disk partition will hold.
         </para>
+        <para>
+            The storage volume XML format is specified at https://libvirt.org/formatstorage.html#StorageVol
+        </para>
     </section>
 
     <section id="libvirt_application_development_guide_using_python-Storage_Pools-Listing">
@@ -323,20 +329,6 @@
             <programlisting language="Python"><xi:include href="extras/StoragePools-Example-10.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
         </example>
       </section>
-
-    <section id="libvirt_application_development_guide_using_python-Storage_Pools-Config_Vol">
-        <title>Configuring volumes</title>
-        <indexterm><primary>createXMLFrom</primary></indexterm>
-        <indexterm><primary>Storage volumes</primary>
-        <secondary>createXMLFrom</secondary></indexterm>
-        <para>
-            The following is an XML description for a storage volume.
-        </para>
-        <example>
-            <title>XML description for a storage volume</title>
-            <programlisting language="XML"><xi:include href="extras/StoragePools-Example-11.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-        </example>
-    </section>
 
 </chapter>
 
