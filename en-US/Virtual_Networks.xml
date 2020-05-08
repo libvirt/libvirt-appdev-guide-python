@@ -47,18 +47,18 @@
             </listitem>
         </itemizedlist>
         <para>
-            A virtual network may be transient or persistent. A transient virtual network can only be managed
-            while it is running on the host. When taken offline, all trace of it will disappear. A persistent
-            virtual network has its configuration maintained in a data store on the host, in an implementation
-            defined format. Thus when a persistent network is brought offline, it is still possible to manage its
-            inactive config. A transient network can be turned into a persistent network on the fly by defining a
-            configuration for it.
+            A virtual network may be transient or persistent. A transient virtual network is started upon creation,
+            and can only be managed while it is running on the host. When taken offline, all trace of it will 
+            disappear. A persistent virtual network has its configuration maintained in a data store on the host,
+            in an implementation defined format. Thus when a persistent network is brought offline, it is still
+            possible to manage its inactive configuration. A transient network can be turned into a persistent 
+            network on the fly by defining a configuration for it.
         </para>
         <para>
             After installation of libvirt, every host will get a single virtual network instance called 'default',
             which provides DHCP services to guests and allows NAT'd IP connectivity to the host's interfaces. This
             service is of most use to hosts with intermittent network connectivity. For example, laptops using
-            wireless networking.
+            wireless networking. This network is configured to start automatically.
         </para>
     </section>
 
@@ -98,9 +98,12 @@
         <indexterm><primary>destroy</primary></indexterm>
         <indexterm><primary>Storage networks</primary>
         <secondary>destroy</secondary></indexterm>
+        <indexterm><primary>Storage networks</primary>
+        <secondary>undefine</secondary></indexterm>
         <para>
-            The following example shows how to use the <literal>networkCreateXML</literal>,
-            <literal>networkDefineXML</literal> and the <literal>destroy</literal> methods.
+            The following example shows how to use the <literal>networkDefineXML</literal>,
+            <literal>networkCreateXML</literal>, <literal>destroy</literal> and 
+            <literal>undefine</literal> methods.
         </para>
         <example>
             <title>Creating and destroying virtual networks</title>

@@ -21,7 +21,7 @@ if conn == None:
     exit(1)
 
 # create a persistent virtual network
-network = conn.networkCreateXML(xml)
+network = conn.networkDefineXML(xml)
 if network == None:
     print('Failed to create a virtual network', file=sys.stderr)
     exit(1)
@@ -31,21 +31,26 @@ if active == 1:
 else:
     print('The new persistent virtual network is not active')
 
-# now destroy the persistent virtual network
-network.destroy()
-print()
-
-# create a transient virtual network
-network = conn.networkDefineXML(xml)
-if network == None:
-    print('Failed to define a virtual network', file=sys.stderr)
-    exit(1)
+network.create() # set the network active
 active = network.isActive()
 if active == 1:
     print('The new transient virtual network is active')
 else:
     print('The new transient virtual network is not active')
-network.create() # set the network active
+
+# now destroy the persistent virtual network
+network.destroy()
+
+# erase the persistent virtual network
+network.undefine()
+
+print()
+
+# create a transient virtual network
+network = conn.networkCreateXML(xml)
+if network == None:
+    print('Failed to define a virtual network', file=sys.stderr)
+    exit(1)
 active = network.isActive()
 if active == 1:
     print('The new transient virtual network is active')
