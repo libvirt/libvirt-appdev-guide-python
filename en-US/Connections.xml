@@ -135,6 +135,9 @@ auth_tcp = "sasl"</screen>
                 </listitem>
                 <listitem>
                     <para>A virt user has been added to the SASL database:</para>
+                    <screen>$ saslpasswd2 -a libvirt virt
+Password:
+Again (for verification):</screen>
                 </listitem>
                 <listitem>
                     <para>libvirtd has been started with <parameter>--listen</parameter></para>
@@ -311,21 +314,41 @@ driver+unix:///session</screen>
                         </row>
                         <row>
                             <entry>
-                                <para>one</para>
+                                <para>gsx</para>
                             </entry>
                             <entry>
                                 <para>
-                                    For managing OpenNebula guests
+                                    For managing VMware GSX guests
                                 </para>
                             </entry>
                         </row>
                         <row>
                             <entry>
-                                <para>phyp</para>
+                                <para>vpx</para>
                             </entry>
                             <entry>
                                 <para>
-                                    For managing Power Hypervisor guests
+                                    For managing VMware VPX guests
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para>hyperv</para>
+                            </entry>
+                            <entry>
+                                <para>
+                                    For managing Microsoft Hyper-V guests
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para>one</para>
+                            </entry>
+                            <entry>
+                                <para>
+                                    For managing OpenNebula guests
                                 </para>
                             </entry>
                         </row>
@@ -339,6 +362,27 @@ driver+unix:///session</screen>
                 <title>Connecting to a local QEMU hypervisor</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
+            <para>
+                Note that not all listed drivers can be used this way. The two notable exceptions are 
+                the LXC driver, and client-side-only drivers. Establishing a connection to the LXC
+                driver can be done in the way shown in the next example.
+            </para>
+            <example id="Example-Connect_Local_LXC">
+                <title>Connecting to a local LXC hypervisor</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-32.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+            <para>
+                Client-side-only drivers include ESX, VPX, GPX and Hyper-V. In contrast to the other drivers,
+                these ones cannot be used with remote transport mechanisms. This means that URIs like
+                the following are invalid:
+                <screen>esx+ssh://example.com</screen>
+                An example of the proper usage of these drivers is given below.
+            </para>
+            <example id="Example-Connect_Remote_Client_Side_Only">
+                <title>Connecting to a client-side-only driver</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-33.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+
         </section>
 
         <section id="libvirt_application_development_guide_using_python-Connections-Remote_URIs">
@@ -934,8 +978,7 @@ command -p port [-l username] hostname netcat -U socket
                 <literal>virConnection</literal>instance and, if successful, returns a string
                 containing the hostname possibly expanded to a fully-qualified domain name.
                 If an error occurred, NULL will be returned
-                instead.  It is the responsibility of the caller to free the memory
-                returned from this method call. The following code demonstrates the use of
+                instead.  The following code demonstrates the use of
                 <command>getHostname</command>:
             </para>
             <example id="Example-ConnectGetHostname">
@@ -1120,50 +1163,27 @@ command -p port [-l username] hostname netcat -U socket
         </section>
 
         <section>
-            <title>getVersion</title>
+            <title>Get Library and Driver Versions</title>
             <indexterm><primary>getVersion, Connection</primary></indexterm>
             <indexterm><primary>Connections</primary>
             <secondary>getVersion</secondary></indexterm>
             <para>
-                If no name parameter is passed (or name is None) then the
-                version of the libvirt library is returned as an integer.
+                The libvirt library has version information, both for the package and
+                for the library itself. They can be printed as can be seen below.
             </para>
+            <example id="Example-ConnectGetLibraryVersion">
+                <title>Using virConnectGetVersion</title>
+                <programlisting language="Python"><xi:include href="extras/Connections-Example-34.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
             <para>
-                If a name is passed and it refers to a driver linked to the
-                libvirt library, then this returns a tuple of (library version,
-                driver version). The returned name is merely the driver
-                name; for example, both KVM and QEMU guests are serviced by the
-                driver for the <code>qemu://</code> URI, so a return of "QEMU" does not indicate
-                whether KVM acceleration is present.
+                Each driver that the library supports also has their own version.
+                Version numbers are integers: 1000000*major + 1000*minor + release. The
+                following example demonstrates how to print the version number for
+                a driver.
             </para>
-            <para>
-                If the name passed refers to a non-existent driver, then you
-                will get the exception 'no support for hypervisor'.
-            </para>
-            <para>
-                Versions numbers are integers: 1000000*major + 1000*minor + release.
-            </para>
-            <example id="Example-ConnectGetVersion">
+            <example id="Example-ConnectGetDriverVersion">
                 <title>Using virConnectGetVersion</title>
                 <programlisting language="Python"><xi:include href="extras/Connections-Example-15.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
-            </example>
-        </section>
-
-        <section>
-            <title>getLibVersion</title>
-            <indexterm><primary>getLibVersion, Connection</primary></indexterm>
-            <indexterm><primary>Connections</primary>
-            <secondary>getLibVersion</secondary></indexterm>
-            <para>
-                The <command>getLibVersion</command> method can be used to obtain the version of
-                the libvirt software in use on the host.
-                If successful it returns a Python string with the version, otherwise it returns
-                <literal>None</literal>. The following code demonstrates the
-                use of <command>getLibVersion</command>:
-            </para>
-            <example id="Example-ConnectGetLibVersion">
-                <title>Using virConnectGetLibVersion</title>
-                <programlisting language="Python"><xi:include href="extras/Connections-Example-16.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
         </section>
 
@@ -1212,7 +1232,7 @@ command -p port [-l username] hostname netcat -U socket
             <secondary>isSecure</secondary></indexterm>
             <para>
                 The <command>isSecure</command> method can be used to find out if a given
-                connection is encrypted.  A connection will be classified secure if
+                connection is secure.  A connection will be classified secure if
                 it is either encrypted or it is running on a channel which is not
                 vulnerable to eavesdropping (like a UNIX domain socket).
                 If successful it returns 1 for a
@@ -1265,7 +1285,7 @@ command -p port [-l username] hostname netcat -U socket
             <indexterm><primary>Connections</primary>
             <secondary>getFreeMemory</secondary></indexterm>
             <para>
-                This method compares the given CPU description with the host CPU.
+                The getFreeMemory method can be used to find out the amount of free memory on the host node.
                 Note: most libvirt APIs provide memory sizes in kilobytes, but in this function the returned
                 value is in bytes. Divide by 1024 as necessary.
             </para>
