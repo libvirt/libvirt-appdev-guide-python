@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE bookinfo PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % BOOK_ENTITIES SYSTEM "Libvirt_Application_Development_Guide_Using_Python.ent">
+%BOOK_ENTITIES;
+]>
+<chapter id="libvirt_application_development_guide_using_python-Usage_Examples">
+        <title>Usage Examples</title>
+    <indexterm><primary>Usage</primary></indexterm>
+    <indexterm><primary>Examples</primary></indexterm>
+    <para>
+        This section goes through the fundamentals of the library,
+        aiming to be a quick tutorial to get developers up and
+        running as quickly as possible.
+    </para>
+
+    <section>
+            <title>Zero to Virtual Appliance</title>
+        <indexterm><primary>Tutorial</primary></indexterm>
+        <indexterm><primary>Example</primary></indexterm>
+        <para>
+            This section describes the steps necessary to create a virtual machine (or a
+            container). The driver that will be used is QEMU, but these instructions can be
+            adapted for other drivers as well. The commands given here are for python3, and
+            you are encouraged to run them as you go through this section in an interactive
+            prompt such as ipython3.
+        </para>
+        <para>
+            We begin by defining a new storage pool for out virtual machine. Note that
+            containers do not need any form of storage.
+            <example>
+                <title>Defining a new storage pool</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-1.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            Then, we create a new volume for our virtual machine (again, skip this if creating
+            a container). We use qcow2 as the disk format since it has more support than
+            others for operations like taking snapshots. Note that the path we use is inside
+            the path we defined for our Storage Pool. We assign 16 GiB to this volume, feel
+            free to change this if you wish.
+            <example>
+                <title>Defining a new storage volume</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-2.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            Now, we define our domain. You do not have to define it in the exact same way:
+            <example>
+                <title>Defining the domain</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-3.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+
+        <para>
+            We have successfully defined a virtual machine. You’ll notice however if you try
+            to start this domain, not much happens. We now need to install an operating
+            system. And to do that, we need to attach a DVD drive with the installation disk:
+            <example>
+                <title>Attaching a new disk to the domain</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-4.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            Because we updated the device instead of creating a new one, we made sure to
+            indent the XML appropriately for legibility.
+        </para>
+        <para>
+            Now, we can go ahead and start our domain:
+            <example>
+                <title>Starting the domain</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-5.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            We can interact with our domain using virt-viewer. Simply running it from the
+            terminal gives us a list of virtual machines we can connect to, so that we can start
+            a graphics session:
+            <screen>$ virt-viewer</screen>
+        </para>
+        <para>
+            Once we are done with the installation and configuration of our new domain, we
+            should take a snapshot so we can preserve its state. We can do this like so:
+            <example>
+                <title>Taking a snapshot</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-6.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            Note that if you have applications such as 'Virtual Machine Manager' running to
+            check what you are doing, you may need to refresh the snapshot list to have your
+            new snapshot show up.
+        </para>
+        <para>
+            And with that, we are done! We have created a virtual machine from scratch, and
+            even taken a snapshot to back it up! If we ever mess up the state of the virtual
+            machine, we can always revert back to a snapshot of a known good state like so:
+            <example>
+                <title>Revert to snapshot</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-7.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        
+    </section>
+
+    <section>
+            <title>Taking a Screenshot</title>
+        <indexterm><primary>Tutorial</primary></indexterm>
+        <indexterm><primary>Screenshot</primary></indexterm>
+        
+        <para>
+            To perform operations involving sending and receiving data from the software
+            running on top of a virtualisation driver, we need to use streams.
+        </para>
+        <para>
+            For this example, we assume that we have a domain named 'TestDomain' running
+            on the QEMU virtualisation driver.
+            <example>
+                <title>Looking up the domain</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-8.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            We then create a stream, and take a screenshot. The 'screenshot' method returns
+            the type of image that the screenshot is taken as. Different virtualisation drivers
+            may produce different types of images.
+            <example>
+                <title>Use stream to take screenshot</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-9.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            As the function 'virStreamRecv' (backend for the stream object’s 'recvAll'
+            function) is not always supported, we can listen to our stream on a loop, writing as
+            we go and checking to see if there’s any more data left to read:
+            <example>
+                <title>Reading data from stream</title>
+                <programlisting language="Python"><xi:include href="extras/Usage-Example-10.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+            </example>
+        </para>
+        <para>
+            Once done, we can open our file and see that we have a screenshot of the
+            virtual machine’s desktop. Success! Remember to finish the stream and close the
+            virtualisation driver connection afterwards.
+        </para>
+        <para>
+            Full code in the example below.
+        </para>
+        <example>
+            <title>Taking a Screenshot</title>
+            <programlisting language="Python"><xi:include href="extras/Usage-Example-11.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+        </example>
+    </section>
+</chapter>
