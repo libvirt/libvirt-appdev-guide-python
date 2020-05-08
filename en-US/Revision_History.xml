@@ -8,6 +8,20 @@
   <simpara>
     <revhistory>
       <revision>
+        <revnumber>1.2-0</revnumber>
+        <date>Fri May 8 2020</date>
+        <author>
+          <firstname>Stephanos</firstname>
+          <surname>Charalambous</surname>
+          <email>stephanos1@cytanet.com.cy</email>
+        </author>
+        <revdescription>
+          <simplelist>
+            <member>V1.2 release to the libvirt Development Project.</member>
+          </simplelist>
+        </revdescription>
+      </revision>
+      <revision>
         <revnumber>1.1-1</revnumber>
         <date>Mon Aug 22 2016</date>
         <author>

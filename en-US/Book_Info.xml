@@ -7,9 +7,9 @@
     <title>Libvirt Application Development Guide Using Python</title>
     <subtitle>A guide to libvirt application development with Python</subtitle>
 	<productname>Version</productname>
-	<productnumber>1.1</productnumber>
+	<productnumber>1.2</productnumber>
 	<edition>1</edition>
-	<pubsnumber>1.1</pubsnumber>
+	<pubsnumber>1.2</pubsnumber>
 	<abstract>
         <para>This document provides a guide for libvirt application developers using python.</para>
 	</abstract>
