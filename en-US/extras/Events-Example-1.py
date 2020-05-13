@@ -1,6 +1,6 @@
 # Example-1.py
 # consolecallback - provide a persistent console that survives guest reboots
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import sys, os, logging, libvirt, tty, termios, atexit
 

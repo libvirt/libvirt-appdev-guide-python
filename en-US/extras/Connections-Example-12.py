@@ -1,5 +1,5 @@
 # Example-12.py
-from __future__ import print_function
+#!/usr/bin/env python3
 import sys
 import libvirt
 
