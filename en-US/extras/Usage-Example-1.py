@@ -5,11 +5,10 @@ if conn == None:
     print('Failed to open connection to qemu:///system', file=sys.stderr)
     exit(1)
 
-# We set capacity to 0, because that stands for unlimited.
+# We do not need to define a capacity as we want it to be unlimited.
 poolXML = """<pool type='dir'>
   <name>ExamplePool</name>
   <uuid/>
-  <capacity unit='bytes'>0</capacity>
   <source>
   </source>
   <target>

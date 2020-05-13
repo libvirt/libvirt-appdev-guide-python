@@ -49,7 +49,7 @@
         </para>
         <para>
             An example program that uses most of these functions follows. Note that in order to interact
-            with the guest through the terminal, then a serial console needs to be enabled in the guest
+            with the guest through the terminal, a serial console needs to be enabled in the guest
             system. For linux hosts, this can be done like so:
             <screen>sudo systemctl enable serial-getty@ttyS0.service
 $ sudo systemctl start serial-getty@ttyS0.service</screen>
