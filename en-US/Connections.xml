@@ -342,16 +342,6 @@ driver+unix:///session</screen>
                                 </para>
                             </entry>
                         </row>
-                        <row>
-                            <entry>
-                                <para>one</para>
-                            </entry>
-                            <entry>
-                                <para>
-                                    For managing OpenNebula guests
-                                </para>
-                            </entry>
-                        </row>
                     </tbody>
                 </tgroup>
             </table>
