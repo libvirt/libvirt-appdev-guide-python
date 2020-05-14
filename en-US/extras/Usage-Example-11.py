@@ -4,14 +4,18 @@ import libvirt
 
 domName = 'TestAppliance'
 
-conn = libvirt.open('qemu:///system')
-if conn == None:
-    print('Failed to open connection to qemu:///system', file=sys.stderr)
+conn = None
+try:
+    conn = libvirt.open("qemu:///system")
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
-dom = conn.lookupByName(domName)
-if dom == None:
-    print('Failed to find the domain '+domName, file=sys.stderr)
+dom = None
+try:
+    dom = conn.lookupByName(domName)
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
 stream = conn.newStream()

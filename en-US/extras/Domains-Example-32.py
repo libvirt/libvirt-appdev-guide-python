@@ -6,9 +6,11 @@ from xml.etree import ElementTree
 
 domName = 'Fedora22-x86_64-1'
 
-conn = libvirt.open('qemu:///system')
-if conn == None:
-    print('Failed to open connection to qemu:///system', file=sys.stderr)
+conn = None
+try:
+    conn = libvirt.open("qemu:///system")
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
 dom = conn.lookupByID(5)

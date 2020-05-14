@@ -6,9 +6,11 @@ from xml.dom import minidom
 
 poolName = 'default'
 
-conn = libvirt.open('qemu:///system')
-if conn == None:
-    print('Failed to open connection to qemu:///system', file=sys.stderr)
+conn = None
+try:
+    conn = libvirt.open("qemu:///system")
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
 sp = conn.storagePoolLookupByName(poolName)
