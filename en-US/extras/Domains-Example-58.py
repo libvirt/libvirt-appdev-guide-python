@@ -20,13 +20,18 @@ except libvirt.libvirtError as e:
     print(repr(e), file=sys.stderr)
     exit(1)
 
-flag = dom.isUpdated()
+flag = None
+try:
+    flag = dom.isUpdated()
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
+    conn.close()
+    exit(1)
+
 if flag == 1:
     print('The domain is updated.')
 elif flag == 0:
     print('The domain is not updated.')
-else:
-    print('There was an error.')
 
 conn.close()
 exit(0)
