@@ -12,23 +12,29 @@ except libvirt.libvirtError as e:
     print(repr(e), file=sys.stderr)
     exit(1)
 
-dest_conn = libvirt.open('qemu+ssh://desthost/system')
-if conn == None:
-    print('Failed to open connection to qemu+ssh://desthost/system', file=sys.stderr)
+dest_conn = None
+try:
+    dest_conn = libvirt.open('qemu+ssh://desthost/system')
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
-dom = conn.lookupByID(6)
-if dom == None:
-    print('Failed to find the domain '+domName, file=sys.stderr)
+dom = None
+try:
+    dom = conn.lookupByID(6)
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
-new_dom = dom.migrate(dest_conn, libvirt.VIR_MIGRATE_LIVE, None, None, 0)
-if new_dom == None:
-    print('Could not migrate to the new domain', file=sys.stderr)
+new_dom = None
+try:
+    new_dom = dom.migrate(dest_conn, libvirt.VIR_MIGRATE_LIVE, None, None, 0)
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 
 print('Domain was migrated successfully.', file=sys.stderr)
 
-destconn.close()
+dest_conn.close()
 conn.close()
 exit(0)

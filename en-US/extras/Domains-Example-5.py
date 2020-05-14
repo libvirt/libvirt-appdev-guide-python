@@ -11,16 +11,23 @@ except libvirt.libvirtError as e:
     exit(1)
 
 domainNames = conn.listDefinedDomains()
-if conn == None:
+if domainNames == None:
     print('Failed to get a list of domain names', file=sys.stderr)
 
 domainIDs = conn.listDomainsID()
 if domainIDs == None:
     print('Failed to get a list of domain IDs', file=sys.stderr)
-if len(domainIDs) != 0:
-    for domainID in domainIDs:
-        domain = conn.lookupByID(domainID)
-        domainNames.append(domain.name)
+
+domainNames = ""
+try:
+    if len(domainIDs) != 0:
+        for domainID in domainIDs:
+            domain = conn.lookupByID(domainID)
+            domainNames.append(domain.name)
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
+    conn.close()
+    exit(1)
 
 print("All (active and inactive domain names:")
 if len(domainNames) == 0:

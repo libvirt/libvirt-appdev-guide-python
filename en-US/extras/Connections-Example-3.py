@@ -16,9 +16,11 @@ def request_cred(credentials, user_data):
 
 auth = [[libvirt.VIR_CRED_AUTHNAME, libvirt.VIR_CRED_PASSPHRASE], request_cred, None]
 
-conn = libvirt.openAuth('qemu+tcp://localhost/system', auth, 0)
-if conn == None:
-    print('Failed to open connection to qemu+tcp://localhost/system', file=sys.stderr)
+conn = None
+try:
+    conn = libvirt.openAuth('qemu+tcp://localhost/system', auth, 0)
+except libvirt.libvirtError as e:
+    print(repr(e), file=sys.stderr)
     exit(1)
 conn.close()
 exit(0)
