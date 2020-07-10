@@ -74,8 +74,8 @@
         <para>
             The current Relax NG definition of the XML that is produced and accepted
             by <literal>interfaceDefineXML</literal> and <literal>XMLDesc</literal> can be found in the
-            file <filename>data/xml/interface.rng</filename> of the <package>netcf</package> package, available at
-            <ulink url="http://git.fedorahosted.org/git/netcf.git?p=netcf.git;a=tree">http://git.fedorahosted.org/git/netcf.git?p=netcf.git;a=tree</ulink>. Below are some examples of common interface configurations.
+            file <filename>docs/schema/interface.rng</filename> of the <package>libvirt</package> repository, available at
+            <ulink url="https://gitlab.com/libvirt/libvirt/">https://gitlab.com/libvirt/libvirt/</ulink>. Below are some examples of common interface configurations.
         </para>
         <example>
             <title>XML definition of an ethernet interface using DHCP</title>
