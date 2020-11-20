@@ -1,8 +1,8 @@
 
 stages:
-  - prebuild
   - containers
   - docs
+  - sanity_checks
 
 .container_job_template: &container_job_definition
   image: docker:stable
@@ -36,13 +36,16 @@ stages:
 # this test on developer's personal forks from which
 # merge requests are submitted
 check-dco:
-  stage: prebuild
+  stage: sanity_checks
+  needs: []
   image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
   script:
     - /check-dco
   except:
     variables:
       - $CI_PROJECT_NAMESPACE == 'libvirt'
+  variables:
+    GIT_DEPTH: 1000
 
 centos-7-container:
   <<: *container_job_definition
