@@ -1,6 +1,10 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+FROM registry.centos.org/centos:8
 
-RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
+RUN dnf install -y centos-release-stream && \
+    dnf install 'dnf-command(config-manager)' -y && \
+    dnf config-manager --set-enabled -y Stream-PowerTools && \
+    dnf install -y centos-release-advanced-virtualization && \
+    dnf install -y epel-release && \
     dnf update -y && \
     dnf install -y \
         bash \
@@ -17,7 +21,6 @@ RUN dnf update -y --nogpgcheck fedora-gpg-keys && \
         perl \
         perl-App-cpanminus \
         pkgconfig \
-        publican \
         python3 \
         python3-pip \
         python3-setuptools \
