@@ -18,5 +18,5 @@ HOSTS=$($LCITOOL hosts | grep -v -E '(freebsd|centos-8|opensuse|macos)')
 
 for host in $HOSTS
 do
-    $LCITOOL dockerfile $host libvirt-appdev-guide-python > $host.Dockerfile
+    $LCITOOL dockerfile $host libvirt-appdev-guide-python > ci-$host.Dockerfile
 done
