@@ -19,7 +19,7 @@ except libvirt.libvirtError as e:
     print(repr(e), file=sys.stderr)
     exit(1)
 
-if dom.create(dom) < 0:
+if dom.create() < 0:
     print('Can not boot guest domain.', file=sys.stderr)
     exit(1)
 

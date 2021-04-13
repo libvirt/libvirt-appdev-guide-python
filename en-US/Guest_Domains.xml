@@ -664,7 +664,7 @@
                     </para>
 
                     <para>
-                        Currently the <literal>defineDomain</literal> method defines a flags
+                        Currently the <literal>defineXMLFlags</literal> method defines a flags
                         parameter that is unused. A value of <literal>0</literal> should always be supplied
                         for that parameter. This may be changed in later versions of the method.
                     </para>
