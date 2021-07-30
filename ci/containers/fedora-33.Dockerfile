@@ -1,4 +1,10 @@
-FROM registry.fedoraproject.org/fedora:rawhide
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool manifest ci/manifest.yml
+#
+# https://gitlab.com/libvirt/libvirt-ci
+
+FROM registry.fedoraproject.org/fedora:33
 
 RUN dnf install -y nosync && \
     echo -e '#!/bin/sh\n\
@@ -10,7 +16,6 @@ else\n\
 fi\n\
 exec "$@"' > /usr/bin/nosync && \
     chmod +x /usr/bin/nosync && \
-    nosync dnf update -y --nogpgcheck fedora-gpg-keys && \
     nosync dnf update -y && \
     nosync dnf install -y \
         ca-certificates \

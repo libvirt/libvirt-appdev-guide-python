@@ -1,9 +1,10 @@
 # THIS FILE WAS AUTO-GENERATED
 #
-#  $ lcitool dockerfile debian-10 libvirt-appdev-guide-python
+#  $ lcitool manifest ci/manifest.yml
 #
-# https://gitlab.com/libvirt/libvirt-ci/-/commit/d527e0c012f476c293f3bc801b7da08bc85f98ef
-FROM docker.io/library/debian:10-slim
+# https://gitlab.com/libvirt/libvirt-ci
+
+FROM docker.io/library/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
