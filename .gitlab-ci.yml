@@ -48,10 +48,7 @@ check-dco:
   variables:
     GIT_DEPTH: 1000
 
-centos-7-container:
-  <<: *container_job_definition
-  variables:
-    NAME: centos-7
+
 
 debian-10-container:
   <<: *container_job_definition
@@ -88,11 +85,6 @@ ubuntu-2004-container:
   variables:
     NAME: ubuntu-2004
 
-
-centos-7-docs:
-  <<: *docs_job_definition
-  variables:
-    NAME: centos-7
 
 debian-10-docs:
   <<: *docs_job_definition
