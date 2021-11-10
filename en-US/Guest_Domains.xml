@@ -1425,8 +1425,8 @@
                 <programlisting language="Python"><xi:include href="extras/Domains-Example-33.py" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
             </example>
             <para>
-                The <literal>getCPUStats</literal> takes one parameter, a boolean. When <literal>False</literal>
-                is used the statistics are reported as an aggregate of all the CPUs. Then <literal>True</literal>
+                The <literal>getCPUStats</literal> takes one parameter, a boolean. When <literal>True</literal>
+                is used the statistics are reported as an aggregate of all the CPUs. Then <literal>False</literal>
                 is used then each CPU reports its individual statistics. Either way a <literal>list</literal>
                 is returned. The statistics are reported in nanoseconds. If a host has four CPUs, there will be
                 four entries in the cpu_stats list. 
