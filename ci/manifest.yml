@@ -6,17 +6,13 @@ gitlab:
   project: libvirt-appdev-guide-python
 
 targets:
-  debian-10: x86_64
+  debian-11: x86_64
 
   debian-sid: x86_64
 
-  fedora-35: x86_64
+  ubuntu-2004: x86_64
 
-  fedora-36: x86_64
-
-  ubuntu-1804: x86_64
-
-  ubuntu-2004:
+  ubuntu-2204:
     jobs:
      - arch: x86_64
        artifacts:
